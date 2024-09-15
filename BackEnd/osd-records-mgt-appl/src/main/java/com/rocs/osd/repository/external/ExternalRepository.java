@@ -1,0 +1,23 @@
+package com.rocs.osd.repository.external;
+
+import com.rocs.osd.domain.external.External;
+import org.springframework.data.jpa.repository.JpaRepository;
+/**
+ * An interface to the External repository.
+ */
+public interface ExternalRepository extends JpaRepository<External, Long> {
+    /**
+     * Checks if an external exists with external number and email.
+     *
+     * @param externalNumber the unique number of the external
+     * @param email the email of the external
+     */
+    boolean existsByExternalNumberAndEmail(String externalNumber, String email);
+    /**
+     * Finds an external by their external id.
+     *
+     * @param externalId the external ID
+     */
+    External findByExternalNumber(String externalId);
+
+}
