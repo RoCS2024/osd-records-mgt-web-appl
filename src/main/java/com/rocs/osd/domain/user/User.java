@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Represents the user in the system where authentication and user profile details are managed.
+ */
 @Entity(name = "login")
 @Data
 public class User implements Serializable {

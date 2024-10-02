@@ -1,5 +1,8 @@
 package com.rocs.osd.exception.domain;
 
+/**
+ * This exception is thrown when a username is not found in the system.
+ */
 public class UsernameNotFoundException extends Exception {
     public UsernameNotFoundException() {
         super();

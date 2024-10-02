@@ -1,5 +1,8 @@
 package com.rocs.osd.exception.constant;
 
+/**
+ * This holds constant messages for exceptions in the application.
+ */
 public class ExceptionConstant {
     public static final String ACCOUNT_LOCKED = "Your account has been locked. Please contact administration";
     public static final String METHOD_IS_NOT_ALLOWED = "This request method is not allowed on this endpoint. Please send a '%s' request";

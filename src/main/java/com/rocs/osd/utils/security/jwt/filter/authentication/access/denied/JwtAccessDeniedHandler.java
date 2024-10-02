@@ -16,6 +16,9 @@ import java.io.OutputStream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ *  JwtAccessDeniedHandler handles access denied exceptions
+ */
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 

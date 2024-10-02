@@ -36,7 +36,9 @@ import java.util.List;
 
 import static com.rocs.osd.utils.security.enumeration.Role.*;
 
-
+/**
+ *This  class handles user-related tasks such as registration, authentication, password recovery, and OTP verification
+ */
 @Service
 @Transactional
 @Qualifier("userDetailsService")

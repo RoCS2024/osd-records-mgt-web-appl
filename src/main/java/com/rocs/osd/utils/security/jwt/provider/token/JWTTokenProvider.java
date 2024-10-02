@@ -23,6 +23,10 @@ import java.util.stream.Collectors;
 import static com.rocs.osd.utils.security.constant.SecurityConstant.*;
 import static java.util.Arrays.stream;
 
+
+/**
+ * JWTTokenProvider generate and validate JWT tokens.
+ */
 @Component
 public class JWTTokenProvider {
 

@@ -124,21 +124,11 @@ public class UserController {
         List<User> users = userService.getUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
-    /**
-     * Authenticates the user using username and password.
-     *
-     * @param username the username
-     * @param password the password
-     */
+
     private void authenticate(String username, String password) {
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
-    /**
-     * Generates JWT headers for the user.
-     *
-     * @param userPrincipal user's principal
-     * @return HTTP headers with the JWT token
-     */
+
     private HttpHeaders getJwtHeader(UserPrincipal userPrincipal) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(userPrincipal));

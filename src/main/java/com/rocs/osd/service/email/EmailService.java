@@ -36,13 +36,7 @@ public class EmailService {
             LOGGER.info("OTP sent to email: {}", email);
         }
     }
-    /**
-     * Creates a new email message with the OTP.
-     *
-     * @param email the recipient's email address
-     * @param otp   the one-time password to be included in the email
-     * @return the constructed Message
-     */
+
     private Message createEmail(String email,String otp) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
@@ -53,11 +47,7 @@ public class EmailService {
         message.saveChanges();
         return message;
     }
-    /**
-     * Retrieves the email session
-     *
-     * @return a Session
-     */
+
     private Session getEmailSession() {
         Properties properties = System.getProperties();
         properties.put(SMTP_HOST, GMAIL_SMTP_SERVER);
