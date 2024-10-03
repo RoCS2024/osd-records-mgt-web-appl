@@ -20,7 +20,7 @@ import java.util.Map;
 
 import static com.rocs.osd.utils.security.constant.SecurityConstant.JWT_TOKEN_HEADER;
 /**
- *REST controller for managing user operations.
+ *RestController for managing user operations such as GET, POST, and PUT requests.
  */
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")

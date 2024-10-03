@@ -26,8 +26,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 /**
- * Security configuration for the application, setting up authentication, authorization,
- * and CORS
+ * This class provides the security configuration for the application, setting up authentication, authorization,
+ * and Cross-Origin Resource Sharing that allow or restrict access to the application’s resources from different origins (domains).
  */
 @Configuration
 @EnableWebSecurity
@@ -56,27 +56,28 @@ public class SecurityConfiguration {
         this.authConfiguration = authConfiguration;
     }
     /**
-     * Configures the AuthenticationManager with UserDetailsService and BCryptPasswordEncoder.
+     * Configures the AuthenticationManager with a user details service and password encoder.
      *
-     * @param auth the AuthenticationManagerBuilder to configure
+     * @param auth the builder for the authentication manager
      */
     @Autowired
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
     /**
-     * Provides an AuthenticationManager bean.
+     * Provides the AuthenticationManager bean used for managing authentication.
      *
      * @return the AuthenticationManager bean
+     * @throws Exception if an error occurs during authentication setup
      */
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
         return authConfiguration.getAuthenticationManager();
     }
     /**
-     * Configures CORS settings for the application.
+     * Configures CORS settings, allowing specific domains and headers.
      *
-     * @return the CorsConfigurationSource bean
+     * @return the CORS configuration source
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -103,10 +104,11 @@ public class SecurityConfiguration {
     }
 
     /**
-     * Configures the security filter chain for HTTP requests.
+     * Configures security filters, session management, and request authorizations.
      *
-     * @param http the HttpSecurity object to configure
-     * @return the SecurityFilterChain bean
+     * @param http the security configuration for HTTP requests
+     * @return the configured security filter chain
+     * @throws Exception if an error occurs during security setup
      */
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {

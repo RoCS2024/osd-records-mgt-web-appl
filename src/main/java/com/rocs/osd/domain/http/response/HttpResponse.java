@@ -5,7 +5,7 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 /**
- * Represents a custom HTTP response for API responses.
+ * Represents Hypertext Transfer Protocol response for Application Programming Interface responses.
  */
 @Data
 @AllArgsConstructor

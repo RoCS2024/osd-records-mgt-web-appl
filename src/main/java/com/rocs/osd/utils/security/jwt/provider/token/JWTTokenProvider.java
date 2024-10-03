@@ -25,7 +25,7 @@ import static java.util.Arrays.stream;
 
 
 /**
- * JWTTokenProvider generate and validate JWT tokens.
+ * JSON Web Token Provider is responsible for generating, validating, and extracting details from the JSON Web Token Tokens.
  */
 @Component
 public class JWTTokenProvider {

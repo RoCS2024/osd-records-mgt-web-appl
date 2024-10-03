@@ -10,7 +10,7 @@ import static java.util.Collections.emptyList;
 
 
 /**
- * Convert the List of Strings to a single String
+ * This method takes a List of Strings and converts it into a single String.
  */
 @Converter
 public class StringListConverter implements AttributeConverter<List<String>, String> {
