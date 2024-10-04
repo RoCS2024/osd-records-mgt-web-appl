@@ -8,6 +8,7 @@ import java.util.List;
  * An interface to the Guest repository.
  */
 public interface GuestRepository extends JpaRepository<Guest, Long> {
+
     /**
      * Finds a guest by guest id.
      *
@@ -15,6 +16,7 @@ public interface GuestRepository extends JpaRepository<Guest, Long> {
      * @return a list of guests with the specified ID
      */
     List<Guest> findGuestById(Long guestId);
+
     /**
      * Finds a guest by guest number.
      *

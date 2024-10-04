@@ -27,6 +27,7 @@ public class EmailService {
      *
      * @param email the recipient's email address
      * @param otp   the one-time password to be sent
+     * @throws MessagingException  if an error occurs while sending the email
      */
     public void sendNewPasswordEmail(String email, String otp) throws MessagingException {
         Message message = createEmail(email, otp);

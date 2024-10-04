@@ -37,7 +37,7 @@ import java.util.List;
 import static com.rocs.osd.utils.security.enumeration.Role.*;
 
 /**
- *This  class handles user-related tasks such as registration, authentication, password recovery, and OTP verification
+ *This  class handles user-related tasks such as registration, authentication, password recovery, and  verification One-Time Password
  */
 @Service
 @Transactional
@@ -53,6 +53,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private EmailService emailService;
 
+    /**
+     * Constructor for injecting UserService and EmailService.
+     *
+     * @param userRepository  the service used for user management
+     * @param studentRepository the service used for managing Student
+     * @param employeeRepository  the service used for managing Employee
+     * @param externalRepository  the service used for managing External
+     * @param passwordEncoder the service used for encrypting passwords
+     * @param emailService the service used for sending emails
+     */
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            StudentRepository studentRepository,
@@ -244,7 +254,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public User findUserByUsername(String username) {
         return this.userRepository.findUserByUsername(username);
     }
-
 
 }
 

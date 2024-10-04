@@ -30,6 +30,7 @@ public class UserController {
     private final UserService userService;
     private AuthenticationManager authenticationManager;
     private JWTTokenProvider jwtTokenProvider;
+
     /**
      * Constructs a new UserController with the provided services.
      *
@@ -43,11 +44,18 @@ public class UserController {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
     }
+
     /**
      * Registers a new user.
      *
      * @param user user to register
      * @return the newly registered user
+     * @throws UsernameExistsException if username already exists
+     * @throws EmailExistsException if email already exists
+     * @throws MessagingException if an error occurs during email operations
+     * @throws PersonExistsException if the person already exists
+     * @throws UserNotFoundException if the user is not found
+     * @throws UsernameNotFoundException if the username is not found
      */
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody User user)
@@ -55,11 +63,18 @@ public class UserController {
         User newUser = this.userService.register(user);
         return new ResponseEntity<>(newUser, HttpStatus.OK);
     }
+
     /**
      * Initiates a password reset process.
      *
      * @param user user requesting the password reset
-     * @return user with reset instructions
+     * @return user with reset password
+     * @throws UsernameNotFoundException if the username is not found
+     * @throws EmailExistsException if email is not found
+     * @throws MessagingException if email sending fails
+     * @throws PersonExistsException if the person does not exist
+     * @throws UserNotFoundException if the user is not found
+     * @throws UsernameExistsException if the username already exist
      */
     @PostMapping("/forgot-password")
     public ResponseEntity<User> forgotPassword(@RequestBody User user)
@@ -67,11 +82,15 @@ public class UserController {
         User newUser = this.userService.forgotPassword(user);
         return new ResponseEntity<>(newUser, HttpStatus.OK);
     }
+
     /**
      * Verifies OTP for password reset.
      *
      * @param user user verifying the OTP
      * @return user if OTP verification is successful
+     * @throws UsernameNotFoundException if the username is not found
+     * @throws PersonExistsException if the person is not found
+     * @throws OtpExistsException if the OTP is incorrect
      */
     @PostMapping("/verify-forgot-password")
     public ResponseEntity<User> verifyForgotPassword(@RequestBody User user)
@@ -79,6 +98,7 @@ public class UserController {
         User newUser = this.userService.verifyOtpForgotPassword(user);
         return new ResponseEntity<>(newUser, HttpStatus.OK);
     }
+
     /**
      * Verifies OTP to unlock the user account.
      *
@@ -100,11 +120,13 @@ public class UserController {
             return new ResponseEntity<>("Invalid OTP", HttpStatus.UNAUTHORIZED);
         }
     }
+
     /**
      * Log in the user and generates a JWT token.
      *
      * @param user user attempting to log in
      * @return the logged-in user with JWT in headers
+     * @throws UsernameNotFoundException if the username is not found
      */
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody User user) throws UsernameNotFoundException{
@@ -114,6 +136,7 @@ public class UserController {
         HttpHeaders jwtHeaders = getJwtHeader(userPrincipal);
         return new ResponseEntity<>("login success....", jwtHeaders, HttpStatus.OK);
     }
+
     /**
      * Retrieves the list of all users.
      *

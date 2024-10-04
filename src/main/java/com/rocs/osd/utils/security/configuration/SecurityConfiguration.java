@@ -41,6 +41,16 @@ public class SecurityConfiguration {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationConfiguration authConfiguration;
 
+    /**
+     * Constructor to inject dependencies.
+     *
+     * @param jwtAuthorizationFilter filter the JWT token authorization
+     * @param jwtAccessDeniedHandler handle the access denied errors
+     * @param authenticationEntryPoint entry point for authentication failures
+     * @param userDetailsService load the user details
+     * @param bCryptPasswordEncoder password encoder (BCrypt)
+     * @param authConfiguration configuration for authentication management
+     */
     @Autowired
     public SecurityConfiguration(JwtAuthorizationFilter jwtAuthorizationFilter,
                                  JwtAccessDeniedHandler jwtAccessDeniedHandler,
@@ -55,15 +65,18 @@ public class SecurityConfiguration {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authConfiguration = authConfiguration;
     }
+
     /**
      * Configures the AuthenticationManager with a user details service and password encoder.
      *
      * @param auth the builder for the authentication manager
+     * @throws Exception if an error occurs during configuration
      */
     @Autowired
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
+
     /**
      * Provides the AuthenticationManager bean used for managing authentication.
      *
@@ -74,6 +87,7 @@ public class SecurityConfiguration {
     public AuthenticationManager authenticationManager() throws Exception {
         return authConfiguration.getAuthenticationManager();
     }
+
     /**
      * Configures CORS settings, allowing specific domains and headers.
      *

@@ -3,7 +3,6 @@ package com.rocs.osd.domain.person;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.sql.Timestamp;
 import java.util.Date;
 /**
  * Represents the person entity.

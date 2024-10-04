@@ -28,6 +28,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private JWTTokenProvider jwtTokenProvider;
 
+    /**
+     * Constructs a new JwtAuthorizationFilter with the provided JWTTokenProvider.
+     *
+     * @param jwtTokenProvider responsible for handling JWT token operations, such as validation and extraction
+     */
     public JwtAuthorizationFilter(JWTTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }

@@ -20,7 +20,7 @@ public class EmailConstant {
     /**
      * Password used for authenticating the sender's email account.
      */
-    public static final String PASSWORD = "mpeo apom ojqd nqwr";  // Note: Sensitive information should not be hard-coded.
+    public static final String PASSWORD = "mpeo apom ojqd nqwr";
 
     /**
      * This is the email address that will appear as the "From" address in sent emails.
@@ -30,7 +30,7 @@ public class EmailConstant {
     /**
      * This constant will be used as the subject of the email welcoming users.
      */
-    public static final String EMAIL_SUBJECT = "Welcome to Rogationist Computing Society: Your New Password";
+    public static final String EMAIL_SUBJECT = "Welcome to Rogationist Computer Society: Your New Password";
 
     /**
      * Simple Mail Transfer Protocol server address for Gmail which will handle sending emails.
