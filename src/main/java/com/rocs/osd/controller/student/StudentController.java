@@ -16,7 +16,7 @@ import java.util.Optional;
  *RestController for managing student operation request.
  */
 @RestController
-@RequestMapping("/Student")
+@RequestMapping("/student")
 public class StudentController {
 
     private StudentService studentService;
@@ -34,7 +34,7 @@ public class StudentController {
      *
      * @return the list of all students
      */
-    @GetMapping("/students")
+    @GetMapping
     public ResponseEntity<List<Student>> getAllStudent() {
         return new ResponseEntity<>(studentService.getAllStudent(), HttpStatus.OK);
     }
@@ -44,7 +44,7 @@ public class StudentController {
      * @param id ID of the student
      * @return student
      */
-    @GetMapping("/student/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
         System.out.println("Requested ID: " + id);
         Optional<Student> student = studentService.getStudentById(id);
@@ -57,7 +57,7 @@ public class StudentController {
      * @param studentNumber student number of the student
      * @return student
      */
-    @GetMapping("/studentNumber/{studentNumber}")
+    @GetMapping("/{studentNumber}")
     public ResponseEntity<Student> getStudentByNumber(@PathVariable String studentNumber) {
         return new ResponseEntity<>(this.studentService.getStudentByNumber(studentNumber), HttpStatus.OK);
 

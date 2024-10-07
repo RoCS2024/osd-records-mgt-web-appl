@@ -12,7 +12,7 @@ import java.util.List;
  *RestController for managing guest operations such as GET and POST requests.
  */
 @RestController
-@RequestMapping("/Guest")
+@RequestMapping("/guest")
 public class GuestController {
 
     private GuestService guestService;
@@ -29,7 +29,7 @@ public class GuestController {
      *
      * @return The list of all guests
      */
-    @GetMapping("/guests")
+    @GetMapping
     public ResponseEntity<List<Guest>> getAllGuest() {
         return new ResponseEntity<>(guestService.getAllGuest(), HttpStatus.OK);
     }
@@ -39,7 +39,7 @@ public class GuestController {
      * @param guestNumber guest number of the guest to retrieve
      * @return The guest
      */
-    @GetMapping("/getGuestByGuestNumber/{guestNumber}")
+    @GetMapping("/{guestNumber}")
     public ResponseEntity<Guest> getGuestByGuestNumber(@PathVariable String guestNumber) {
         Guest guest = guestService.getStudentByStudentNumber(guestNumber);
         return new ResponseEntity<>(guest, HttpStatus.OK);
@@ -50,7 +50,7 @@ public class GuestController {
      * @param guestId ID of the guest whose beneficiaries are to be retrieved
      * @return The list of beneficiaries
      */
-    @GetMapping("/guests/{guestId}/getBeneficiaries")
+    @GetMapping("/{guestId}/Beneficiaries")
     public ResponseEntity<List<Guest>> getGuestBeneficiaries(@PathVariable Long guestId) {
         List<Guest> beneficiaries = guestService.getGuestBeneficiaries(guestId);
         return new ResponseEntity<>(beneficiaries, HttpStatus.OK);
@@ -61,7 +61,7 @@ public class GuestController {
      * @param guest The guest containing the details to be added
      * @return added guest
      */
-    @PostMapping("/addGuest")
+    @PostMapping
     public ResponseEntity<String> addGuest(@RequestBody Guest guest){
         try {
             guestService.addGuest(guest);

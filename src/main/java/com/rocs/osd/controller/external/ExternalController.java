@@ -13,7 +13,7 @@ import java.util.List;
  *RestController for managing external operation GET request.
  */
 @RestController
-@RequestMapping("/External")
+@RequestMapping("/external")
 public class ExternalController {
 
     private ExternalService externalService;
@@ -30,7 +30,7 @@ public class ExternalController {
      *
      * @return the list of all external
      */
-    @GetMapping("/externals")
+    @GetMapping
     public ResponseEntity<List<External>> getAllExternal() {
         return new ResponseEntity<>(externalService.getAllExternal(), HttpStatus.OK);
     }

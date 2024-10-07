@@ -15,7 +15,7 @@ import java.util.List;
  *RestController for managing employee operation such as GET request.
  */
 @RestController
-@RequestMapping("/Employee")
+@RequestMapping("/employee")
 public class EmployeeController {
 
     private EmployeeService employeeService;
@@ -33,7 +33,7 @@ public class EmployeeController {
      *
      * @return The list of all employees
      */
-    @GetMapping("/employees")
+    @GetMapping
     public ResponseEntity<List<Employee>> getAllEmployee() {
         return new ResponseEntity<>(employeeService.getAllEmployee(), HttpStatus.OK);
     }
@@ -43,7 +43,7 @@ public class EmployeeController {
      * @param employeeNumber employee number of the employee to retrieve
      * @return the employee
      */
-    @GetMapping("/employee/{employeeNumber}")
+    @GetMapping("/{employeeNumber}")
     public ResponseEntity<Employee> getEmployeeByEmployeeNumber(@PathVariable String employeeNumber) {
         Employee employee = employeeService.getEmployeeByEmployeeNumber(employeeNumber);
         if (employee != null) {
