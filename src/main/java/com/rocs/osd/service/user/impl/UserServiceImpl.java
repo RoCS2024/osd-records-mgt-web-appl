@@ -15,6 +15,7 @@ import com.rocs.osd.repository.external.ExternalRepository;
 import com.rocs.osd.repository.student.StudentRepository;
 import com.rocs.osd.repository.user.UserRepository;
 import com.rocs.osd.service.email.EmailService;
+import com.rocs.osd.service.login.attempt.LoginAttemptService;
 import com.rocs.osd.service.user.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private EmployeeRepository employeeRepository;
     private ExternalRepository externalRepository;
     private BCryptPasswordEncoder passwordEncoder;
-
+    private LoginAttemptService loginAttemptService;
     private EmailService emailService;
 
     /**
@@ -61,6 +62,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
      * @param employeeRepository  the service used for managing Employee
      * @param externalRepository  the service used for managing External
      * @param passwordEncoder the service used for encrypting passwords
+     * @param loginAttemptService the service used for managing login
      * @param emailService the service used for sending emails
      */
     @Autowired
@@ -69,12 +71,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                            EmployeeRepository employeeRepository,
                            ExternalRepository externalRepository,
                            BCryptPasswordEncoder passwordEncoder,
+                           LoginAttemptService loginAttemptService,
                            EmailService emailService) {
         this.employeeRepository = employeeRepository;
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.externalRepository = externalRepository;
         this.passwordEncoder = passwordEncoder;
+        this.loginAttemptService = loginAttemptService;
         this.emailService = emailService;
     }
     @Override
@@ -89,6 +93,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserPrincipal userPrincipal = new UserPrincipal(user);
         LOGGER.info("User information found...");
         return userPrincipal;
+    }
+    private void validateLoginAttempt(User user) {
+        if(!user.isLocked()) {
+            if (loginAttemptService.hasExceededMaxAttempts(user.getUsername())) {
+                user.setLocked(true);
+            } else {
+                user.setLocked(false);
+            }
+        } else {
+            loginAttemptService.evictUserFromLoginAttemptCache(user.getUsername());
+        }
     }
 
     @Override
@@ -246,6 +261,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private String generateOTP() {
         return RandomStringUtils.randomAlphanumeric(10);
     }
+
     private String generateUserId() {
         return RandomStringUtils.randomNumeric(10);
     }
