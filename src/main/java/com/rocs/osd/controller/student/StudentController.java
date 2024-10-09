@@ -34,7 +34,7 @@ public class StudentController {
      *
      * @return the list of all students
      */
-    @GetMapping
+    @GetMapping("/studentList")
     public ResponseEntity<List<Student>> getAllStudent() {
         return new ResponseEntity<>(studentService.getAllStudent(), HttpStatus.OK);
     }
@@ -44,7 +44,7 @@ public class StudentController {
      * @param id ID of the student
      * @return student
      */
-    @GetMapping("/{id}")
+    @GetMapping("/studentId/{id}")
     public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
         System.out.println("Requested ID: " + id);
         Optional<Student> student = studentService.getStudentById(id);
@@ -57,7 +57,7 @@ public class StudentController {
      * @param studentNumber student number of the student
      * @return student
      */
-    @GetMapping("/{studentNumber}")
+    @GetMapping("/studentNumber/{studentNumber}")
     public ResponseEntity<Student> getStudentByNumber(@PathVariable String studentNumber) {
         return new ResponseEntity<>(this.studentService.getStudentByNumber(studentNumber), HttpStatus.OK);
 

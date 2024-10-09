@@ -29,7 +29,7 @@ public class GuestController {
      *
      * @return The list of all guests
      */
-    @GetMapping
+    @GetMapping("/guestList")
     public ResponseEntity<List<Guest>> getAllGuest() {
         return new ResponseEntity<>(guestService.getAllGuest(), HttpStatus.OK);
     }
@@ -39,7 +39,7 @@ public class GuestController {
      * @param guestNumber guest number of the guest to retrieve
      * @return The guest
      */
-    @GetMapping("/{guestNumber}")
+    @GetMapping("/guestNumber/{guestNumber}")
     public ResponseEntity<Guest> getGuestByGuestNumber(@PathVariable String guestNumber) {
         Guest guest = guestService.getStudentByStudentNumber(guestNumber);
         return new ResponseEntity<>(guest, HttpStatus.OK);
@@ -61,7 +61,7 @@ public class GuestController {
      * @param guest The guest containing the details to be added
      * @return added guest
      */
-    @PostMapping
+    @PostMapping("/addGuest")
     public ResponseEntity<String> addGuest(@RequestBody Guest guest){
         try {
             guestService.addGuest(guest);

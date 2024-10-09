@@ -33,7 +33,7 @@ public class EmployeeController {
      *
      * @return The list of all employees
      */
-    @GetMapping
+    @GetMapping("/employeeList")
     public ResponseEntity<List<Employee>> getAllEmployee() {
         return new ResponseEntity<>(employeeService.getAllEmployee(), HttpStatus.OK);
     }
@@ -43,7 +43,7 @@ public class EmployeeController {
      * @param employeeNumber employee number of the employee to retrieve
      * @return the employee
      */
-    @GetMapping("/{employeeNumber}")
+    @GetMapping("employeeNumber/{employeeNumber}")
     public ResponseEntity<Employee> getEmployeeByEmployeeNumber(@PathVariable String employeeNumber) {
         Employee employee = employeeService.getEmployeeByEmployeeNumber(employeeNumber);
         if (employee != null) {

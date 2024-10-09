@@ -30,7 +30,7 @@ public class ExternalController {
      *
      * @return the list of all external
      */
-    @GetMapping
+    @GetMapping("/externalList")
     public ResponseEntity<List<External>> getAllExternal() {
         return new ResponseEntity<>(externalService.getAllExternal(), HttpStatus.OK);
     }

@@ -3,6 +3,7 @@ package com.rocs.osd.service.user.impl;
 
 import com.rocs.osd.domain.employee.Employee;
 import com.rocs.osd.domain.external.External;
+import com.rocs.osd.domain.guest.Guest;
 import com.rocs.osd.domain.student.Student;
 import com.rocs.osd.domain.user.User;
 import com.rocs.osd.domain.user.principal.UserPrincipal;
@@ -12,6 +13,7 @@ import com.rocs.osd.exception.domain.UserNotFoundException;
 import com.rocs.osd.exception.domain.UsernameExistsException;
 import com.rocs.osd.repository.employee.EmployeeRepository;
 import com.rocs.osd.repository.external.ExternalRepository;
+import com.rocs.osd.repository.guest.GuestRepository;
 import com.rocs.osd.repository.student.StudentRepository;
 import com.rocs.osd.repository.user.UserRepository;
 import com.rocs.osd.service.email.EmailService;
@@ -50,6 +52,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private StudentRepository studentRepository;
     private EmployeeRepository employeeRepository;
     private ExternalRepository externalRepository;
+    private GuestRepository guestRepository;
     private BCryptPasswordEncoder passwordEncoder;
     private LoginAttemptService loginAttemptService;
     private EmailService emailService;
@@ -70,6 +73,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                            StudentRepository studentRepository,
                            EmployeeRepository employeeRepository,
                            ExternalRepository externalRepository,
+                           GuestRepository guestRepository,
                            BCryptPasswordEncoder passwordEncoder,
                            LoginAttemptService loginAttemptService,
                            EmailService emailService) {
@@ -77,6 +81,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.externalRepository = externalRepository;
+        this.guestRepository = guestRepository;
         this.passwordEncoder = passwordEncoder;
         this.loginAttemptService = loginAttemptService;
         this.emailService = emailService;
@@ -188,12 +193,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             Student studentNumber = studentRepository.findByStudentNumber(userNumber);
             Employee employeeNumber = employeeRepository.findByEmployeeNumber(userNumber);
             External externalNumber = externalRepository.findByExternalNumber(userNumber);
+            Guest guestNumber = guestRepository.findByGuestNumber(userNumber);
+
             if(studentNumber != null){
                 emailService.sendNewPasswordEmail(studentNumber.getEmail(),otp);
             } else if(employeeNumber != null){
                 emailService.sendNewPasswordEmail(employeeNumber.getEmail(),otp);
             } else if(externalNumber != null){
                 emailService.sendNewPasswordEmail(externalNumber.getEmail(),otp);
+            } else if(guestNumber != null){
+                emailService.sendNewPasswordEmail(guestNumber.getEmail(),otp);
             }
             userRepository.save(user);
             LOGGER.info("Username Found!");
