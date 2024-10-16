@@ -14,7 +14,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/Offense")
+@RequestMapping("/offense")
 public class OffenseController {
 
     private OffenseService offenseService;

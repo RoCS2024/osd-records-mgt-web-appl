@@ -24,4 +24,20 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
      * @return employeeNumber
      */
     Employee findByEmployeeNumber(String employeeNumber);
+
+    /**
+     * Finds an employee by ID.
+     *
+     * @param id the employee ID
+     * @return ID
+     */
+    Employee findByUser_Id(long id);
+
+    /**
+     * Finds an employee by employee email.
+     *
+     * @param email the employee email
+     * @return email
+     */
+    Employee findByEmail(String email);
 }

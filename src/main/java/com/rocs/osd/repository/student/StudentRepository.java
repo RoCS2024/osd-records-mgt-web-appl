@@ -25,4 +25,20 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
      * @return studentNumber
      */
     Student findByStudentNumber(String studentNumber);
+
+    /**
+     * Finds a student by ID.
+     *
+     * @param id the student ID
+     * @return ID
+     */
+    Student findByUser_Id(long id);
+
+    /**
+     * Finds a student by email.
+     *
+     * @param email the student email
+     * @return email
+     */
+    Student findByEmail(String email);
 }
