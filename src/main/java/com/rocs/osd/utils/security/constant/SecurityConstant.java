@@ -41,6 +41,8 @@ public class SecurityConstant {
             "/user/register",
             "/user/verify-otp",
             "/user/forgot-password",
+            "/user/forgot-username",
+            "/user/verify-otp-forgot-username",
             "/user/verify-forgot-password",
             "Guest/addGuest"
     };

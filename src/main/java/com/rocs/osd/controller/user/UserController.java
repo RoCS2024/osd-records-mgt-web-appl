@@ -1,5 +1,6 @@
 package com.rocs.osd.controller.user;
 
+import com.rocs.osd.domain.register.Register;
 import com.rocs.osd.domain.user.User;
 import com.rocs.osd.domain.user.principal.UserPrincipal;
 import com.rocs.osd.exception.domain.*;
@@ -48,7 +49,7 @@ public class UserController {
     /**
      * Registers a new user.
      *
-     * @param user user to register
+     * @param register user to register
      * @return the newly registered user
      * @throws UsernameExistsException if username already exists
      * @throws EmailExistsException if email already exists
@@ -58,10 +59,10 @@ public class UserController {
      * @throws UsernameNotFoundException if the username is not found
      */
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user)
+    public ResponseEntity<User> register(@RequestBody Register register)
             throws UsernameNotFoundException, UsernameExistsException, EmailExistsException, MessagingException, PersonExistsException, UserNotFoundException {
-        User newUser = this.userService.register(user);
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+        Register registered = this.userService.register(register);
+        return new ResponseEntity<>(registered.getUser(), HttpStatus.OK);
     }
 
     /**
@@ -70,17 +71,19 @@ public class UserController {
      * @param user user requesting the password reset
      * @return user with reset password
      * @throws UsernameNotFoundException if the username is not found
-     * @throws EmailExistsException if email is not found
      * @throws MessagingException if email sending fails
-     * @throws PersonExistsException if the person does not exist
-     * @throws UserNotFoundException if the user is not found
-     * @throws UsernameExistsException if the username already exist
      */
     @PostMapping("/forgot-password")
-    public ResponseEntity<User> forgotPassword(@RequestBody User user)
-            throws UsernameNotFoundException, UsernameExistsException, EmailExistsException, MessagingException, PersonExistsException, UserNotFoundException {
-        User newUser = this.userService.forgotPassword(user);
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+    public ResponseEntity<String> forgotPassword(@RequestBody User user)
+            throws UsernameNotFoundException, MessagingException {
+        try {
+            userService.forgotPassword(user);
+            return new ResponseEntity<>("An OTP has been sent to your registered email address.", HttpStatus.OK);
+        } catch (UsernameNotFoundException e) {
+            return new ResponseEntity<>("Username not found", HttpStatus.NOT_FOUND);
+        } catch (MessagingException e) {
+            return new ResponseEntity<>("Failed to send OTP email", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -148,6 +151,48 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    /**
+     * Initiates a username reset process.
+     *
+     * @param request user requesting the username reset by sending otp
+     * @return user with otp to reset username
+     * @throws UsernameNotFoundException if the username is not found
+     */
+    @PostMapping("/forgot-username")
+    public ResponseEntity<String> forgotUsername(@RequestBody Map<String, String> request) {
+        String email = request.getOrDefault("email", "");
+        if (email.isEmpty()) {
+            return ResponseEntity.badRequest().body("Email is required");
+        }
+        try {
+            userService.forgotUsername(email);
+            return ResponseEntity.ok("An OTP has been sent to your registered email address.");
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email not found");
+        } catch (MessagingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send OTP email");
+        }
+    }
+
+    /**
+     * Verifies OTP for username reset.
+     *
+     * @param userRequest user verifying the OTP and new username to be set
+     * @return user if OTP verification is successful
+     * @throws UsernameExistsException if the new username already exists
+     */
+    @PostMapping("/verify-otp-forgot-username")
+    public ResponseEntity<String> verifyOtpForgotUsername(@RequestBody User userRequest) throws UsernameExistsException {
+        try {
+            User user = userService.verifyOtpForgotUsername(userRequest);
+            return new ResponseEntity<>("Username: " + user.getUsername(), HttpStatus.OK);
+        } catch (UsernameNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (OtpExistsException e) {
+            return new ResponseEntity<>("Incorrect OTP code!", HttpStatus.BAD_REQUEST);
+        }
+    }
+
     private void authenticate(String username, String password) {
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
@@ -157,4 +202,6 @@ public class UserController {
         headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(userPrincipal));
         return headers;
     }
+
+
 }

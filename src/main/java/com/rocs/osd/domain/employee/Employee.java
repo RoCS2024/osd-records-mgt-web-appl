@@ -1,12 +1,10 @@
 package com.rocs.osd.domain.employee;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rocs.osd.domain.person.Person;
 import com.rocs.osd.domain.station.Station;
 import com.rocs.osd.domain.user.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -19,17 +17,22 @@ import java.util.Date;
 @Data
 public class Employee extends Person implements Serializable {
 
+    @Column(length = 32, nullable = false)
     private String employeeNumber;
-    @Column(length = 32)
+    @Column(length = 64, nullable = false)
     private String positionInRc;
     private Date dateEmployed;
+    @Column(length = 16, nullable = false)
     private String sssNo;
+    @Column(length = 16, nullable = false)
     private String tinNo;
+    @Column(length = 16, nullable = false)
     private String pagibigNo;
-    @OneToOne
+    @ManyToOne
     private Station station;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonIgnore
     private User user;
 }

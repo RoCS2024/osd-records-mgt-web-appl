@@ -25,4 +25,18 @@ public interface ExternalRepository extends JpaRepository<External, Long> {
      */
     External findByExternalNumber(String externalId);
 
+    /**
+     * Finds an external employee by ID.
+     *
+     * @param id the external ID
+     * @return ID
+     */
+    External findByUser_Id(long id);
+    /**
+     * Finds an external employee by employee email.
+     *
+     * @param email the external email
+     * @return email
+     */
+    External findByEmail(String email);
 }

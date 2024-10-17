@@ -4,6 +4,7 @@ package com.rocs.osd.service.user.impl;
 import com.rocs.osd.domain.employee.Employee;
 import com.rocs.osd.domain.external.External;
 import com.rocs.osd.domain.guest.Guest;
+import com.rocs.osd.domain.register.Register;
 import com.rocs.osd.domain.student.Student;
 import com.rocs.osd.domain.user.User;
 import com.rocs.osd.domain.user.principal.UserPrincipal;
@@ -64,6 +65,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
      * @param studentRepository the service used for managing Student
      * @param employeeRepository  the service used for managing Employee
      * @param externalRepository  the service used for managing External
+     * @param guestRepository the guest used for managing External
      * @param passwordEncoder the service used for encrypting passwords
      * @param loginAttemptService the service used for managing login
      * @param emailService the service used for sending emails
@@ -93,6 +95,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             LOGGER.error("Username not found...");
             throw new UsernameNotFoundException("Username not found.");
         }
+        validateLoginAttempt(user);
         user.setLastLoginDate(new Date());
         this.userRepository.save(user);
         UserPrincipal userPrincipal = new UserPrincipal(user);
@@ -110,107 +113,106 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             loginAttemptService.evictUserFromLoginAttemptCache(user.getUsername());
         }
     }
-
     @Override
-    public User register(User newUser) throws UsernameNotFoundException, UsernameExistsException, MessagingException, PersonExistsException, UserNotFoundException {
-        validateNewUsername(newUser.getUsername());
-        validatePassword(newUser.getPassword());
+    public Register register(Register register) throws UsernameNotFoundException, UsernameExistsException, MessagingException, PersonExistsException, UserNotFoundException {
+        String username = register.getUser().getUsername();
+        String password = register.getUser().getPassword();
+        validateNewUsername(username);
+        validatePassword(password);
         String otp = generateOTP();
         User user = new User();
-        user.setUsername(newUser.getUsername());
-        user.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
         user.setJoinDate(new Date());
         user.setActive(true);
-        if(newUser.getStudent() != null && newUser.getStudent().getStudentNumber() != null) {
-            String studentNumber = newUser.getStudent().getStudentNumber();
-            String email = newUser.getStudent().getEmail();
-            boolean isStudentExists = studentRepository.existsByStudentNumberAndEmail(studentNumber, email);
-            boolean isUserIdExists = userRepository.existsByUserId(newUser.getStudent().getStudentNumber());
-            if (!isStudentExists) {
-                throw new PersonExistsException("Student Number Does Not Exist!!");
-            } else if (isUserIdExists) {
-                throw new PersonExistsException("Student Already Exists!");
+
+        if (register.getEmployee() != null && register.getEmployee().getEmployeeNumber() != null) {
+            String userType = register.getEmployee().getEmployeeNumber();
+            Employee employeeExists = employeeRepository.findByEmployeeNumber(userType);
+            if(employeeExists != null){
+                String email = employeeExists.getEmail();
+                emailService.sendNewPasswordEmail(email, otp);
+                employeeExists.setUser(user);
+                user.setOtp(otp);
+                user.setLocked(true);
+                user.setRole(ROLE_EMPLOYEE.name());
+                user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
+                userRepository.save(user);
             }
-            emailService.sendNewPasswordEmail(email,otp);
-            user.setUserId(newUser.getStudent().getStudentNumber());
-            user.setOtp(otp);
-            user.setLocked(true);
-            user.setRole(ROLE_STUDENT.name());
-            user.setAuthorities(Arrays.stream(ROLE_STUDENT.getAuthorities()).toList());
-        } else if(newUser.getEmployee() != null && newUser.getEmployee().getEmployeeNumber() != null) {
-            String employeeNumber = newUser.getEmployee().getEmployeeNumber();
-            String email = newUser.getEmployee().getEmail();
-            boolean isEmployeeExists = employeeRepository.existsByEmployeeNumberAndEmail(employeeNumber,email);
-            boolean isUserIdExists = userRepository.existsByUserId(newUser.getEmployee().getEmployeeNumber());
-            if (!isEmployeeExists) {
-                throw new PersonExistsException("Employee Number Does Not Exist!!");
-            } else if (isUserIdExists) {
-                throw new PersonExistsException("Employee Already Exists!");
+        } else if (register.getStudent() != null && register.getStudent().getStudentNumber() != null) {
+            String userType = register.getStudent().getStudentNumber();
+            Student studentExists = studentRepository.findByStudentNumber(userType);
+            if(studentExists != null){
+                String email = studentExists.getEmail();
+                emailService.sendNewPasswordEmail(email, otp);
+                studentExists.setUser(user);
+                user.setOtp(otp);
+                user.setLocked(true);
+                user.setRole(ROLE_STUDENT.name());
+                user.setAuthorities(Arrays.stream(ROLE_STUDENT.getAuthorities()).toList());
+                userRepository.save(user);
             }
-            emailService.sendNewPasswordEmail(email,otp);
-            user.setUserId(newUser.getEmployee().getEmployeeNumber());
-            user.setOtp(otp);
-            user.setLocked(true);
-            user.setRole(ROLE_EMPLOYEE.name());
-            user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
-        } else if (newUser.getExternal() != null && newUser.getExternal().getExternalNumber() != null) {
-            String externalNumber = newUser.getExternal().getExternalNumber();
-            String email = newUser.getExternal().getEmail();
-            boolean isExternalExists = externalRepository.existsByExternalNumberAndEmail(externalNumber, email);
-            boolean isUserIdExists = userRepository.existsByUserId(newUser.getExternal().getExternalNumber());
-            if (!isExternalExists) {
-                throw new PersonExistsException("Employee Number Does Not Exist!!");
-            } else if (isUserIdExists) {
-                throw new PersonExistsException("Employee Already Exists!");
+        } else if (register.getExternal() != null && register.getExternal().getExternalNumber() != null) {
+            String userType = register.getExternal().getExternalNumber();
+            External externalExists = externalRepository.findByExternalNumber(userType);
+            if(externalExists != null){
+                String email = externalExists.getEmail();
+                emailService.sendNewPasswordEmail(email, otp);
+                externalExists.setUser(user);
+                user.setOtp(otp);
+                user.setLocked(true);
+                user.setRole(ROLE_EMPLOYEE.name());
+                user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
+                userRepository.save(user);
             }
-            emailService.sendNewPasswordEmail(email,otp);
-            user.setUserId(newUser.getExternal().getExternalNumber());
-            user.setOtp(otp);
-            user.setLocked(true);
-            user.setRole(ROLE_EMPLOYEE.name());
-            user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
-        } else  {
-            LOGGER.info("Guest account created!");
-                user.setUserId(newUser.getGuest().getGuestNumber());
-                user.setLocked(false);
+        } else if (register.getGuest() != null && register.getGuest().getGuestNumber() != null) {
+            String userType = register.getGuest().getGuestNumber();
+            Guest guestExists = guestRepository.findByGuestNumber(userType);
+            if(guestExists != null){
+                String email = guestExists.getEmail();
+                emailService.sendNewPasswordEmail(email, otp);
+                guestExists.setUser(user);
+                user.setOtp(otp);
+                user.setLocked(true);
                 user.setRole(ROLE_GUEST.name());
                 user.setAuthorities(Arrays.stream(ROLE_GUEST.getAuthorities()).toList());
+                userRepository.save(user);
+            }
         }
-        userRepository.save(user);
-        LOGGER.info("User registered successfully!");
-        return user;
+        return register;
     }
 
     @Override
     public User forgotPassword(User newUser) throws UsernameNotFoundException, MessagingException {
         String username = newUser.getUsername();
-        boolean isUsernameExist = userRepository.existsUserByUsername(username);
-        if(isUsernameExist){
-            User user = userRepository.findUserByUsername(username);
-            String otp = generateOTP();
-            user.setOtp(otp);
-            String userNumber = user.getUserId();
-            Student studentNumber = studentRepository.findByStudentNumber(userNumber);
-            Employee employeeNumber = employeeRepository.findByEmployeeNumber(userNumber);
-            External externalNumber = externalRepository.findByExternalNumber(userNumber);
-            Guest guestNumber = guestRepository.findByGuestNumber(userNumber);
-
-            if(studentNumber != null){
-                emailService.sendNewPasswordEmail(studentNumber.getEmail(),otp);
-            } else if(employeeNumber != null){
-                emailService.sendNewPasswordEmail(employeeNumber.getEmail(),otp);
-            } else if(externalNumber != null){
-                emailService.sendNewPasswordEmail(externalNumber.getEmail(),otp);
-            } else if(guestNumber != null){
-                emailService.sendNewPasswordEmail(guestNumber.getEmail(),otp);
-            }
-            userRepository.save(user);
-            LOGGER.info("Username Found!");
-        } else {
+        User user = userRepository.findUserByUsername(username);
+        if (user == null) {
             throw new UsernameNotFoundException("Username Not Found!");
         }
-        return newUser;
+
+        String otp = generateOTP();
+        user.setOtp(otp);
+
+        Student studentAccount = studentRepository.findByUser_Id(user.getId());
+        Employee employeeAccount = employeeRepository.findByUser_Id(user.getId());
+        External externalAccount = externalRepository.findByUser_Id(user.getId());
+        Guest guestAccount = guestRepository.findByUser_Id(user.getId());
+
+        if(studentAccount != null && studentAccount.getEmail() != null) {
+            emailService.sendNewPasswordEmail(studentAccount.getEmail(), otp);
+        } else if(employeeAccount != null && employeeAccount.getEmail() != null) {
+            emailService.sendNewPasswordEmail(employeeAccount.getEmail(), otp);
+        } else if(externalAccount != null && externalAccount.getEmail() != null) {
+            emailService.sendNewPasswordEmail(externalAccount.getEmail(), otp);
+        } else if(guestAccount != null && guestAccount.getEmail() != null) {
+            emailService.sendNewPasswordEmail(guestAccount.getEmail(), otp);
+        } else {
+           throw new MessagingException("No email associated with this user for password reset.");
+        }
+        userRepository.save(user);
+         return user;
     }
+
     @Override
     public User verifyOtpForgotPassword(User newUser) throws UsernameNotFoundException, PersonExistsException, OtpExistsException {
         validatePassword(newUser.getPassword());
@@ -239,11 +241,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Override
-    public List<User> getUsers() {
-        return this.userRepository.findAll();
-    }
-
     private void validateNewUsername(String newUsername)
             throws UserNotFoundException, UsernameExistsException, PersonExistsException {
         User userByNewUsername = findUserByUsername(newUsername);
@@ -260,6 +257,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 throw new PersonExistsException("Username already exists.");
             }
         }
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return this.userRepository.findAll();
     }
     private void validatePassword(String password) throws PersonExistsException {
         String passwordPattern = ".*[^a-zA-Z0-9].*";
@@ -280,5 +282,53 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return this.userRepository.findUserByUsername(username);
     }
 
+    @Override
+    public User forgotUsername(String email) throws UsernameNotFoundException, MessagingException {
+        User user = findUserByEmail(email);
+
+        if (user == null) {
+            throw new UsernameNotFoundException("Email not associated with any username!");
+        }
+        String otp = generateOTP();
+        user.setOtp(otp);
+        userRepository.save(user);
+        emailService.sendNewPasswordEmail(email, otp);
+
+        return user;
+    }
+
+    private User findUserByEmail(String email) {
+        Student studentAccount = studentRepository.findByEmail(email);
+        if (studentAccount != null) return studentAccount.getUser();
+        Employee employeeAccount = employeeRepository.findByEmail(email);
+        if (employeeAccount != null) return employeeAccount.getUser();
+        External externalAccount = externalRepository.findByEmail(email);
+        if (externalAccount != null) return externalAccount.getUser();
+        Guest guestAccount = guestRepository.findByEmail(email);
+        if (guestAccount != null) return guestAccount.getUser();
+
+        return null;
+    }
+
+    @Override
+    public User verifyOtpForgotUsername(User newUser) throws OtpExistsException, UsernameExistsException {
+        String otp = newUser.getOtp();
+        String newUsername = newUser.getUsername();
+
+        List<User> users = userRepository.findAll();
+        User user = users.stream()
+                .filter(u -> otp.equals(u.getOtp()))
+                .findFirst()
+                .orElseThrow(() -> new OtpExistsException("Invalid OTP code!"));
+
+        if (userRepository.findUserByUsername(newUsername) != null) {
+            throw new UsernameExistsException("Username already exists!");
+        }
+        user.setUsername(newUsername);
+        user.setOtp(null);
+        userRepository.save(user);
+
+        return user;
+    }
 }
 

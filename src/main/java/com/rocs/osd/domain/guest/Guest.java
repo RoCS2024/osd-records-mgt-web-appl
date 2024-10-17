@@ -1,5 +1,6 @@
 package com.rocs.osd.domain.guest;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rocs.osd.domain.person.Person;
 import com.rocs.osd.domain.student.Student;
 import com.rocs.osd.domain.user.User;
@@ -25,6 +26,7 @@ public class Guest extends Person implements Serializable {
     private List<Student> beneficiary;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonIgnore
     private User user;
 }
