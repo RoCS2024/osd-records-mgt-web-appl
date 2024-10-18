@@ -38,7 +38,7 @@ jobs:
         /opt/dependency-check/bin/dependency-check.sh --project "osd-records-mgt-web-appl" --scan ./ --format "ALL" --out dependency-check-report
 
     - name: Upload OWASP Dependency-Check report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3 
       with:
         name: dependency-check-report
         path: dependency-check-report
