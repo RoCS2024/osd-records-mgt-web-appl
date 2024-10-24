@@ -23,5 +23,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return user with username
      */
     boolean existsUserByUsername(String username);
+    /**
+     * Finds user by their otp.
+     *
+     * @param otp  OTP with the user
+     * @return otp
+     */
+    User findUserByOtp(String otp);
+
 
 }

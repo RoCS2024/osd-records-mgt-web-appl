@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (register.getEmployee() != null && register.getEmployee().getEmployeeNumber() != null) {
             String userType = register.getEmployee().getEmployeeNumber();
             Employee employeeExists = employeeRepository.findByEmployeeNumber(userType);
-            if(employeeExists != null){
+            if (employeeExists != null) {
                 String email = employeeExists.getEmail();
                 emailService.sendNewPasswordEmail(email, otp);
                 employeeExists.setUser(user);
@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         } else if (register.getStudent() != null && register.getStudent().getStudentNumber() != null) {
             String userType = register.getStudent().getStudentNumber();
             Student studentExists = studentRepository.findByStudentNumber(userType);
-            if(studentExists != null){
+            if (studentExists != null) {
                 String email = studentExists.getEmail();
                 emailService.sendNewPasswordEmail(email, otp);
                 studentExists.setUser(user);
@@ -155,7 +155,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         } else if (register.getExternal() != null && register.getExternal().getExternalNumber() != null) {
             String userType = register.getExternal().getExternalNumber();
             External externalExists = externalRepository.findByExternalNumber(userType);
-            if(externalExists != null){
+            if (externalExists != null) {
                 String email = externalExists.getEmail();
                 emailService.sendNewPasswordEmail(email, otp);
                 externalExists.setUser(user);
@@ -167,21 +167,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             }
         } else if (register.getGuest() != null && register.getGuest().getGuestNumber() != null) {
             String userType = register.getGuest().getGuestNumber();
-            Guest guestExists = guestRepository.findByGuestNumber(userType);
-            if(guestExists != null){
-                String email = guestExists.getEmail();
-                emailService.sendNewPasswordEmail(email, otp);
-                guestExists.setUser(user);
-                user.setOtp(otp);
-                user.setLocked(true);
-                user.setRole(ROLE_GUEST.name());
-                user.setAuthorities(Arrays.stream(ROLE_GUEST.getAuthorities()).toList());
-                userRepository.save(user);
-            }
+            String email = register.getGuest().getEmail();
+            Guest guest = register.getGuest();
+
+            guest.setUser(user);
+            emailService.sendNewPasswordEmail(email, otp);
+
+            user.setOtp(otp);
+            user.setLocked(true);
+            user.setRole(ROLE_GUEST.name());
+            user.setAuthorities(Arrays.stream(ROLE_GUEST.getAuthorities()).toList());
+
+            userRepository.save(user);
+            guestRepository.save(guest);
         }
         return register;
     }
-
     @Override
     public User forgotPassword(User newUser) throws UsernameNotFoundException, MessagingException {
         String username = newUser.getUsername();
@@ -315,12 +316,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         String otp = newUser.getOtp();
         String newUsername = newUser.getUsername();
 
-        List<User> users = userRepository.findAll();
-        User user = users.stream()
-                .filter(u -> otp.equals(u.getOtp()))
-                .findFirst()
-                .orElseThrow(() -> new OtpExistsException("Invalid OTP code!"));
-
+        User user = userRepository.findUserByOtp(otp);
+        if (user == null) {
+            throw new OtpExistsException("Invalid OTP code!");
+        }
         if (userRepository.findUserByUsername(newUsername) != null) {
             throw new UsernameExistsException("Username already exists!");
         }
