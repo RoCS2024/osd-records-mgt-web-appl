@@ -5,7 +5,7 @@ spring:
     url: jdbc:oracle:thin:@localhost:1521:rogate
     username: prefect
     password: Changeme0
-#  jpa:
+#    jpa:
 #      show-sql: true
 #      hibernate:
 #        ddl-auto: create
