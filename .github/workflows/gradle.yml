@@ -26,6 +26,25 @@ jobs:
       run: chmod +x ./gradlew 
     - name: Build with Gradle Wrapper      
       run: ./gradlew build  
+    
+    - name: Install OWASP Dependency-Check
+      run: |
+        wget https://github.com/jeremylong/DependencyCheck/releases/download/v7.2.1/dependency-check-7.2.1-release.zip
+        unzip dependency-check-7.2.1-release.zip
+        mv dependency-check /opt/dependency-check
+    
+    - name: Create report output directory
+      run: mkdir -p dependency-check-report
+    
+    - name: Run OWASP Dependency-Check
+      run: |
+        /opt/dependency-check/bin/dependency-check.sh --project "osd-records-mgt-web-appl" --scan ./ --format "ALL" --out dependency-check-report
+
+    - name: Upload OWASP Dependency-Check report
+      uses: actions/upload-artifact@v3
+      with:
+        name: dependency-check-report
+        path: dependency-check-report
 
   dependency-submission:    
     runs-on: ubuntu-latest    
