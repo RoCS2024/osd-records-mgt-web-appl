@@ -24,5 +24,5 @@ public class Section implements Serializable {
     @Column(length = 64, nullable = false)
     private String clusterHead;
     @Column(length = 16, nullable = false)
-    private String division;
+    private String organization;
 }

@@ -41,4 +41,11 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
      * @return email
      */
     Student findByEmail(String email);
+    /**
+     * Finds a student by userId.
+     *
+     * @param userId userId
+     * @return studentId
+     */
+    Student findByUserId(Long userId);
 }

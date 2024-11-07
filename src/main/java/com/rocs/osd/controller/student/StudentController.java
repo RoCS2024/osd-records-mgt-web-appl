@@ -62,4 +62,19 @@ public class StudentController {
         return new ResponseEntity<>(this.studentService.getStudentByNumber(studentNumber), HttpStatus.OK);
 
     }
+    /**
+     * Retrieves a student by userId.
+     *
+     * @param userId of the student
+     * @return student
+     */
+    @GetMapping("/studentIdByUserId/{userId}")
+    public ResponseEntity<Long> getStudentIdByUserId(@PathVariable Long userId) {
+        Long studentId = studentService.getStudentIdByUserId(userId);
+        if (studentId != null) {
+            return new ResponseEntity<>(studentId, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }

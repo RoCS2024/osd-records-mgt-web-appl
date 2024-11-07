@@ -21,4 +21,12 @@ public interface EmployeeService {
      * @return the employee
      */
     Employee getEmployeeByEmployeeNumber(String employeeNumber);
+    /**
+     * Retrieves a specific employee id based on employee user id.
+     *
+     * @param userId user id
+     * @return employeeId
+     */
+    Long getEmployeeIdByUserId(Long userId);
 }
+
