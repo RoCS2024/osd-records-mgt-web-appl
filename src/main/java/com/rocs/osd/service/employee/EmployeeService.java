@@ -22,11 +22,11 @@ public interface EmployeeService {
      */
     Employee getEmployeeByEmployeeNumber(String employeeNumber);
     /**
-     * Retrieves a specific employee id based on employee user id.
+     * Retrieves a specific employee based on employee user id.
      *
-     * @param userId user id
-     * @return employeeId
+     * @param userId userId
+     * @return  the employee
      */
-    Long getEmployeeIdByUserId(Long userId);
+    Employee getEmployeeNumberByUserId(Long userId);
 }
 

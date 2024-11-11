@@ -68,11 +68,11 @@ public class StudentController {
      * @param userId of the student
      * @return student
      */
-    @GetMapping("/studentIdByUserId/{userId}")
-    public ResponseEntity<Long> getStudentIdByUserId(@PathVariable Long userId) {
-        Long studentId = studentService.getStudentIdByUserId(userId);
-        if (studentId != null) {
-            return new ResponseEntity<>(studentId, HttpStatus.OK);
+    @GetMapping("/studentNumberByUserId/{userId}")
+    public ResponseEntity<Student> getStudentNumberByUserId(@PathVariable Long userId) {
+        Student student = studentService.getStudentNumberByUserId(userId);
+        if (student != null) {
+            return new ResponseEntity<>(student, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

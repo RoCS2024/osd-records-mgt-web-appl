@@ -1,6 +1,7 @@
 package com.rocs.osd.controller.employee;
 
 import com.rocs.osd.domain.employee.Employee;
+import com.rocs.osd.domain.guest.Guest;
 import com.rocs.osd.service.employee.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,13 +57,13 @@ public class EmployeeController {
      * Retrieves an employee by userId.
      *
      * @param  userId of the employee to retrieve
-     * @return the employeeId
+     * @return the employee
      */
-    @GetMapping("/employeeIdByUserId/{userId}")
-    public ResponseEntity<Long> getEmployeeIdByUserId(@PathVariable Long userId) {
-        Long employeeId = employeeService.getEmployeeIdByUserId(userId);
-        if (employeeId != null) {
-            return new ResponseEntity<>(employeeId, HttpStatus.OK);
+    @GetMapping("/employeeNumberByUserId/{userId}")
+    public ResponseEntity<Employee> getEmployeeNumberByUserId(@PathVariable Long userId) {
+        Employee employee = employeeService.getEmployeeNumberByUserId(userId);
+        if (employee != null) {
+            return new ResponseEntity<>(employee, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

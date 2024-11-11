@@ -43,8 +43,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     /**
      * Finds an employee by userId.
      *
-     * @param userId userId
-     * @return employeeId
+     * @param userId the employee userId
+     * @return employee
      */
     Employee findByUserId(Long userId);
 }

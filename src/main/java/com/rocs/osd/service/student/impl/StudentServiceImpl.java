@@ -1,5 +1,6 @@
 package com.rocs.osd.service.student.impl;
 
+import com.rocs.osd.domain.employee.Employee;
 import com.rocs.osd.domain.student.Student;
 import com.rocs.osd.repository.student.StudentRepository;
 import com.rocs.osd.service.student.StudentService;
@@ -38,12 +39,7 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.findByStudentNumber(studentNumber);
     }
     @Override
-    public Long getStudentIdByUserId(Long userId) {
-        Student student = studentRepository.findByUserId(userId);
-        if (student != null) {
-            return student.getId();
-        } else {
-            return null;
-        }
+    public Student getStudentNumberByUserId(Long userId) {
+        return studentRepository.findByUserId(userId);
     }
 }

@@ -35,5 +35,5 @@ public interface StudentService {
      * @param userId user id
      * @return studentId
      */
-    Long getStudentIdByUserId(Long userId);
+    Student getStudentNumberByUserId(Long userId);
 }
