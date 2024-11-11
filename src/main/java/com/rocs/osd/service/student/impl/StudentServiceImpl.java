@@ -1,6 +1,5 @@
 package com.rocs.osd.service.student.impl;
 
-import com.rocs.osd.domain.employee.Employee;
 import com.rocs.osd.domain.student.Student;
 import com.rocs.osd.repository.student.StudentRepository;
 import com.rocs.osd.service.student.StudentService;

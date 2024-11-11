@@ -1,7 +1,6 @@
 package com.rocs.osd.controller.employee;
 
 import com.rocs.osd.domain.employee.Employee;
-import com.rocs.osd.domain.guest.Guest;
 import com.rocs.osd.service.employee.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
