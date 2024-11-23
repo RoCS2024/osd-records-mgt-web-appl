@@ -29,4 +29,6 @@ public interface StudentService {
      * @return Student with specific student number
      */
     Student getStudentByNumber(String studentNumber);
+
+    Student findStudentByUserId(long id);
 }

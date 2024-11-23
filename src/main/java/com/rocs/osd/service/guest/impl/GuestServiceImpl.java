@@ -36,6 +36,12 @@ public class GuestServiceImpl implements GuestService {
     public Guest getStudentByStudentNumber(String studentNumber) {
         return guestRepository.findByGuestNumber(studentNumber);
     }
+
+    @Override
+    public Guest findGuestByUserId(long id) {
+        return guestRepository.findByUser_Id(id);
+    }
+
     @Override
     public void addGuest(Guest guest) {
         guestRepository.save(guest);

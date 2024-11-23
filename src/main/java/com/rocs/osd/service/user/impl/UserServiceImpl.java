@@ -174,7 +174,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             emailService.sendNewPasswordEmail(email, otp);
 
             user.setOtp(otp);
-            user.setLocked(true);
+            user.setLocked(false);
             user.setRole(ROLE_GUEST.name());
             user.setAuthorities(Arrays.stream(ROLE_GUEST.getAuthorities()).toList());
 

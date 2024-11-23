@@ -26,4 +26,9 @@ public class ExternalServiceImpl implements ExternalService {
     public List<External> getAllExternal() {
         return externalRepository.findAll();
     }
+
+    @Override
+    public External findExternalByUserId(long id) {
+        return externalRepository.findByUser_Id(id);
+    }
 }
