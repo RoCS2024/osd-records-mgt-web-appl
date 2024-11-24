@@ -159,8 +159,8 @@ public class UserController {
 
         User loginUser = userService.findUserByUsername(user.getUsername());
         long userId = loginUser.getId();
-
-        String userNumber = getUserNumber(userId);
+        String role = loginUser.getRole();
+        String userNumber = getUserNumber(userId, role);
         if (userNumber == null) {
             throw new UsernameNotFoundException("User account not found");
         }
@@ -174,22 +174,21 @@ public class UserController {
      * Retrieves the unique identifier for a user based on their role.
      *
      * @param userId the ID of the user
+     * @param role checks the role of user
      * @return the unique identifier (e.g., employee number, student number, external number, or guest number)
      *         or null if the user does not belong to any role
      */
-    private String getUserNumber(long userId) {
-        Employee employee = employeeService.findEmployeeByUserId(userId);
-        if (employee != null) return employee.getEmployeeNumber();
-
-        Student student = studentService.findStudentByUserId(userId);
-        if (student != null) return student.getStudentNumber();
-
-        External external = externalService.findExternalByUserId(userId);
-        if (external != null) return external.getExternalNumber();
-
-        Guest guest = guestService.findGuestByUserId(userId);
-        if (guest != null) return guest.getGuestNumber();
-        return null;
+    private String getUserNumber(long userId, String role) {
+        switch (role){
+            case "ROLE_EMPLOYEE":
+                return employeeService.findEmployeeByUserId(userId).getEmployeeNumber();
+            case "ROLE_STUDENT":
+                return studentService.findStudentByUserId(userId).getStudentNumber();
+            case "ROLE_EXTERNAL":
+                return externalService.findExternalByUserId(userId).getExternalNumber();
+            default:
+                return guestService.findGuestByUserId(userId).getGuestId().toString();
+        }
     }
 
     /**
