@@ -33,4 +33,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Employee getEmployeeByEmployeeNumber(String employeeNumber) {
         return employeeRepository.findByEmployeeNumber(employeeNumber);
     }
+
+    @Override
+    public Employee findEmployeeByUserId(long id) {
+        return employeeRepository.findByUser_Id(id);
+    }
 }

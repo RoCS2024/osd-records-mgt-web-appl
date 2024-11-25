@@ -15,4 +15,6 @@ public interface ExternalService {
      * @return list of all external
      */
     List<External> getAllExternal();
+
+    External findExternalByUserId(long id);
 }

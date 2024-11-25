@@ -21,4 +21,6 @@ public interface EmployeeService {
      * @return the employee
      */
     Employee getEmployeeByEmployeeNumber(String employeeNumber);
+
+    Employee findEmployeeByUserId(long id);
 }

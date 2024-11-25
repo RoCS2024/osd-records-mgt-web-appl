@@ -35,4 +35,6 @@ public interface GuestService {
      * @return guest
      */
     Guest getStudentByStudentNumber(String studentNumber);
+
+    Guest findGuestByUserId(long id);
 }

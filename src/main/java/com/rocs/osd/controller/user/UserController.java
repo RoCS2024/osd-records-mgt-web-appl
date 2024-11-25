@@ -1,9 +1,17 @@
 package com.rocs.osd.controller.user;
 
+import com.rocs.osd.domain.employee.Employee;
+import com.rocs.osd.domain.external.External;
+import com.rocs.osd.domain.guest.Guest;
 import com.rocs.osd.domain.register.Register;
+import com.rocs.osd.domain.student.Student;
 import com.rocs.osd.domain.user.User;
 import com.rocs.osd.domain.user.principal.UserPrincipal;
 import com.rocs.osd.exception.domain.*;
+import com.rocs.osd.service.employee.EmployeeService;
+import com.rocs.osd.service.external.ExternalService;
+import com.rocs.osd.service.guest.GuestService;
+import com.rocs.osd.service.student.StudentService;
 import com.rocs.osd.service.user.UserService;
 import com.rocs.osd.utils.security.jwt.provider.token.JWTTokenProvider;
 import jakarta.mail.MessagingException;
@@ -29,19 +37,31 @@ import static com.rocs.osd.utils.security.constant.SecurityConstant.JWT_TOKEN_HE
 public class UserController {
 
     private final UserService userService;
+    private final EmployeeService employeeService;
+    private final StudentService studentService;
+    private final ExternalService externalService;
+    private final GuestService guestService;
     private AuthenticationManager authenticationManager;
     private JWTTokenProvider jwtTokenProvider;
 
     /**
      * Constructs a new UserController with the provided services.
      *
-     * @param userService service handling user operations
+     * @param userService           service handling user operations
+     * @param employeeService
+     * @param studentService
+     * @param externalService
+     * @param guestService
      * @param authenticationManager handles authentication
-     * @param jwtTokenProvider provides JWT token
+     * @param jwtTokenProvider      provides JWT token
      */
     @Autowired
-    public UserController(UserService userService, AuthenticationManager authenticationManager, JWTTokenProvider jwtTokenProvider) {
+    public UserController(UserService userService, EmployeeService employeeService, StudentService studentService, ExternalService externalService, GuestService guestService, AuthenticationManager authenticationManager, JWTTokenProvider jwtTokenProvider) {
         this.userService = userService;
+        this.employeeService = employeeService;
+        this.studentService = studentService;
+        this.externalService = externalService;
+        this.guestService = guestService;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -125,19 +145,50 @@ public class UserController {
     }
 
     /**
-     * Log in the user and generates a JWT token.
+     * Authenticates the user and generates a JWT token.
      *
-     * @param user user attempting to log in
-     * @return the logged-in user with JWT in headers
-     * @throws UsernameNotFoundException if the username is not found
+     * @param user the user attempting to log in
+     * @return the logged-in user's unique identifier (e.g., employee, student, external, or guest number)
+     *         along with the JWT token in the response headers
+     * @throws UsernameNotFoundException if the username is not found or associated with any account type
      */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) throws UsernameNotFoundException{
+    public ResponseEntity<String> login(@RequestBody User user) throws UsernameNotFoundException {
+        System.out.println(user.getUsername());
         authenticate(user.getUsername(), user.getPassword());
+
         User loginUser = userService.findUserByUsername(user.getUsername());
+        long userId = loginUser.getId();
+        String role = loginUser.getRole();
+        String userNumber = getUserNumber(userId, role);
+        if (userNumber == null) {
+            throw new UsernameNotFoundException("User account not found");
+        }
+
         UserPrincipal userPrincipal = new UserPrincipal(loginUser);
         HttpHeaders jwtHeaders = getJwtHeader(userPrincipal);
-        return new ResponseEntity<>("login success....", jwtHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(userNumber, jwtHeaders, HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves the unique identifier for a user based on their role.
+     *
+     * @param userId the ID of the user
+     * @param role checks the role of user
+     * @return the unique identifier (e.g., employee number, student number, external number, or guest number)
+     *         or null if the user does not belong to any role
+     */
+    private String getUserNumber(long userId, String role) {
+        switch (role){
+            case "ROLE_EMPLOYEE":
+                return employeeService.findEmployeeByUserId(userId).getEmployeeNumber();
+            case "ROLE_STUDENT":
+                return studentService.findStudentByUserId(userId).getStudentNumber();
+            case "ROLE_EXTERNAL":
+                return externalService.findExternalByUserId(userId).getExternalNumber();
+            default:
+                return guestService.findGuestByUserId(userId).getGuestId().toString();
+        }
     }
 
     /**
