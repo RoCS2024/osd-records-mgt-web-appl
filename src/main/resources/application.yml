@@ -3,8 +3,8 @@ spring:
     name: osd-records-mgt-appl
   datasource:
     url: jdbc:oracle:thin:@localhost:1521:rogate
-    username: system
-    password: Changeme0
+    username: prefect
+    password: Changeme2024
 #    jpa:
 #      show-sql: true
 #      hibernate:
