@@ -20,8 +20,6 @@ import java.util.List;
 @Data
 public class Guest extends Person implements Serializable {
 
-    private Long guestId;
-    private String guestNumber;
     @OneToMany
     private List<Student> beneficiary;
 

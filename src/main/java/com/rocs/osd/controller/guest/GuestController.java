@@ -33,17 +33,7 @@ public class GuestController {
     public ResponseEntity<List<Guest>> getAllGuest() {
         return new ResponseEntity<>(guestService.getAllGuest(), HttpStatus.OK);
     }
-    /**
-     * Retrieves a specific guest based on the guest number.
-     *
-     * @param guestNumber guest number of the guest to retrieve
-     * @return The guest
-     */
-    @GetMapping("/guestNumber/{guestNumber}")
-    public ResponseEntity<Guest> getGuestByGuestNumber(@PathVariable String guestNumber) {
-        Guest guest = guestService.getStudentByStudentNumber(guestNumber);
-        return new ResponseEntity<>(guest, HttpStatus.OK);
-    }
+
     /**
      * Retrieves a list of beneficiaries for a specific guest.
      *

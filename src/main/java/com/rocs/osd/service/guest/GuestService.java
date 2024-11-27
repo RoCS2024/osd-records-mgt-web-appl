@@ -29,12 +29,11 @@ public interface GuestService {
      */
     List<Guest> getGuestBeneficiaries(Long guestId);
     /**
-     * Retrieves a guest by student number.
+     * Retrieves a guest by id.
      *
-     * @param studentNumber student number
+     * @param id guest id
      * @return guest
      */
-    Guest getStudentByStudentNumber(String studentNumber);
 
     Guest findGuestByUserId(long id);
 }

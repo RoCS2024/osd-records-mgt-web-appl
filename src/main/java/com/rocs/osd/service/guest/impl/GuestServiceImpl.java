@@ -32,10 +32,6 @@ public class GuestServiceImpl implements GuestService {
     public List<Guest> getGuestBeneficiaries(Long guestId) {
         return guestRepository.findGuestById(guestId);
     }
-    @Override
-    public Guest getStudentByStudentNumber(String studentNumber) {
-        return guestRepository.findByGuestNumber(studentNumber);
-    }
 
     @Override
     public Guest findGuestByUserId(long id) {
