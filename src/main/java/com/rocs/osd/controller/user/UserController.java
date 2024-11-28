@@ -187,7 +187,7 @@ public class UserController {
             case "ROLE_EXTERNAL":
                 return externalService.findExternalByUserId(userId).getExternalNumber();
             default:
-                return guestService.findGuestByUserId(userId).getGuestId().toString();
+                return guestService.findGuestByUserId(userId).getId().toString();
         }
     }
 

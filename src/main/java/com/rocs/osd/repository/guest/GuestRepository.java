@@ -18,14 +18,6 @@ public interface GuestRepository extends JpaRepository<Guest, Long> {
     List<Guest> findGuestById(Long guestId);
 
     /**
-     * Finds a guest by guest number.
-     *
-     * @param guestNumber the guest number
-     * @return the guest with the specified guest number
-     */
-    Guest findByGuestNumber(String guestNumber);
-
-    /**
      * Finds a guest by ID.
      *
      * @param id the guest ID

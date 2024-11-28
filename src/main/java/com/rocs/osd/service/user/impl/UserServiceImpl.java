@@ -165,8 +165,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
                 userRepository.save(user);
             }
-        } else if (register.getGuest() != null && register.getGuest().getGuestNumber() != null) {
-            String userType = register.getGuest().getGuestNumber();
+        } else if (register.getGuest() != null) {
             String email = register.getGuest().getEmail();
             Guest guest = register.getGuest();
 
