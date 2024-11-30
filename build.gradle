@@ -41,3 +41,15 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+task runJMeterTests(type: Exec) {
+	group = 'Verification'
+	description = 'Run JMeter performance tests'
+
+
+	commandLine 'jmeter', '-n', '-t', 'src/test/jmeter/testplan.jmx', '-l', 'build/jmeter/results.jtl', '-e', '-o', 'build/jmeter/reports'
+}
+
+
+task buildAndTest {
+	dependsOn 'build', 'runJMeterTests'
+}
