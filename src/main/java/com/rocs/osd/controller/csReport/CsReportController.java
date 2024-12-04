@@ -36,7 +36,7 @@ public class CsReportController {
      *
      * @return The list of all community service reports
      */
-    @GetMapping("/commServReportList")
+    @GetMapping("/csReportList")
     public ResponseEntity<List<CsReport>> getAllCsReport() {
         return new ResponseEntity<>(csReportService.getAllCsReport(), HttpStatus.OK);
     }
@@ -46,7 +46,7 @@ public class CsReportController {
      * @param id ID of the community service report to retrieve
      * @return  The CsReport
      */
-    @GetMapping("/commServReport/{id}")
+    @GetMapping("/csReportId/{id}")
     public ResponseEntity<Optional<CsReport>> getCsReportById(@PathVariable Long id) {
         return new ResponseEntity<>(this.csReportService.getCsReportById(id), HttpStatus.OK);
     }
@@ -55,7 +55,7 @@ public class CsReportController {
      *
      * @param csReport the CsReport containing the details of the report to be added
      */
-    @PostMapping("/addCommServReport")
+    @PostMapping("/addCsReport")
     public ResponseEntity<String> addCsReport(@RequestBody CsReport csReport){
         try {
             csReportService.addCsReport(csReport);
@@ -71,7 +71,7 @@ public class CsReportController {
      * @param csReport CsReport containing the details of the report to be added
      * @return The created CsReport
      */
-    @PostMapping("/addCommServReport/{csSlipId}")
+    @PostMapping("/addCsReportForSlip/{csSlipId}")
     public ResponseEntity<CsReport> addCsReport(@PathVariable Long csSlipId, @RequestBody CsReport csReport) {
         CsReport createdReport = csSlipService.addCsReportToCsSlip(csSlipId, csReport);
         return ResponseEntity.ok(createdReport);
