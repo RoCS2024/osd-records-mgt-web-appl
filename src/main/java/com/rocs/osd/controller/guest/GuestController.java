@@ -32,6 +32,7 @@ public class GuestController {
     public ResponseEntity<List<Guest>> getAllGuest() {
         return new ResponseEntity<>(guestService.getAllGuest(), HttpStatus.OK);
     }
+    
     /**
      * Retrieves a list of beneficiaries for a specific guest.
      *
