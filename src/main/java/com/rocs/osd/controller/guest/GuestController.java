@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/guest")
 public class GuestController {
-
     private GuestService guestService;
     /**
      * This construct a new GuestController with the provided GuestService.
@@ -33,7 +32,6 @@ public class GuestController {
     public ResponseEntity<List<Guest>> getAllGuest() {
         return new ResponseEntity<>(guestService.getAllGuest(), HttpStatus.OK);
     }
-
     /**
      * Retrieves a list of beneficiaries for a specific guest.
      *
