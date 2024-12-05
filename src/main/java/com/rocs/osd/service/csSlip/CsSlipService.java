@@ -1,5 +1,6 @@
 package com.rocs.osd.service.csSlip;
 
+import com.rocs.osd.domain.csReport.CsReport;
 import com.rocs.osd.domain.csSlip.CsSlip;
 
 import java.util.List;
@@ -75,5 +76,13 @@ public interface CsSlipService {
      * @param deduction the deduction amount to update
      */
     void updateDeduction(Long csSlipId, int deduction);
+    /**
+     * Add a Community Service Report to a Community Service Slip.
+     *
+     * @param csSlipId CsSlip ID
+     * @param csReport CsReport to add
+     * @return the updated CsSlip with the added report
+     */
+    CsReport addCsReportToCsSlip(Long csSlipId, CsReport csReport);
 
 }

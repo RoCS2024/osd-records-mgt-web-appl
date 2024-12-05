@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:oracle:thin:@localhost:1521:rogate
     username: prefect
-    password: Changeme2024
+    password: Changeme0
 #    jpa:
 #      show-sql: true
 #      hibernate:

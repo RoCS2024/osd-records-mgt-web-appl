@@ -1,14 +1,18 @@
 package com.rocs.osd.service.csSlip.impl;
 
+import com.rocs.osd.domain.csReport.CsReport;
 import com.rocs.osd.domain.csSlip.CsSlip;
 import com.rocs.osd.domain.student.Student;
 import com.rocs.osd.domain.violation.Violation;
+import com.rocs.osd.exception.ResourceNotFoundException;
+import com.rocs.osd.repository.csReport.CsReportRepository;
 import com.rocs.osd.repository.csSlip.CsSlipRepository;
 import com.rocs.osd.repository.student.StudentRepository;
 import com.rocs.osd.repository.violation.ViolationRepository;
 import com.rocs.osd.service.csSlip.CsSlipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +25,7 @@ public class CsSlipServiceImpl implements CsSlipService {
     private CsSlipRepository csSlipRepository;
     private StudentRepository studentRepository;
     private ViolationRepository violationRepository;
+    private CsReportRepository csReportRepository;
 
     /**
      * This is a constructor for injecting the CsSlipRepository.
@@ -30,11 +35,13 @@ public class CsSlipServiceImpl implements CsSlipService {
      * @param studentRepository accessing student data
      */
     @Autowired
-    public CsSlipServiceImpl(CsSlipRepository csSlipRepository, StudentRepository studentRepository, ViolationRepository violationRepository) {
+    public CsSlipServiceImpl(CsSlipRepository csSlipRepository, StudentRepository studentRepository, ViolationRepository violationRepository, CsReportRepository csReportRepository) {
         this.csSlipRepository = csSlipRepository;
         this.violationRepository = violationRepository;
         this.studentRepository = studentRepository;
+        this.csReportRepository = csReportRepository;
     }
+
 
     @Override
     public List<CsSlip> getAllCsSlip() {
@@ -97,5 +104,14 @@ public class CsSlipServiceImpl implements CsSlipService {
     @Override
     public List<CsSlip> getCsSlipReportByStationName(String name) {
         return csSlipRepository.findByAreaOfCommServ_StationNameIgnoreCase(name);
+    }
+    @Transactional
+    public CsReport addCsReportToCsSlip(Long csSlipId, CsReport csReport) {
+        CsSlip csSlip = csSlipRepository.findById(csSlipId)
+                .orElseThrow(() -> new ResourceNotFoundException("CsSlip not found"));
+        csSlip.addReport(csReport);
+        csReport = csReportRepository.save(csReport);
+        csSlipRepository.save(csSlip);
+        return csReport;
     }
 }
