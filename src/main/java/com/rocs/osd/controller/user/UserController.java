@@ -153,7 +153,7 @@ public class UserController {
      * @throws UsernameNotFoundException if the username is not found or associated with any account type
      */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) throws UsernameNotFoundException {
+    public ResponseEntity<String> login(@RequestBody User user) throws Exception {
         System.out.println(user.getUsername());
         authenticate(user.getUsername(), user.getPassword());
 
@@ -178,16 +178,18 @@ public class UserController {
      * @return the unique identifier (e.g., employee number, student number, external number, or guest number)
      *         or null if the user does not belong to any role
      */
-    private String getUserNumber(long userId, String role) {
-        switch (role){
+    private String getUserNumber(long userId, String role) throws Exception {
+        switch (role) {
             case "ROLE_EMPLOYEE":
                 return employeeService.findEmployeeByUserId(userId).getEmployeeNumber();
             case "ROLE_STUDENT":
                 return studentService.findStudentByUserId(userId).getStudentNumber();
             case "ROLE_EXTERNAL":
                 return externalService.findExternalByUserId(userId).getExternalNumber();
+            case "ROLE_GUEST":
+                return guestService.findGuestByUserId(userId).getId().toString();
             default:
-                return guestService.findGuestByUserId(userId).getGuestId().toString();
+                throw new Exception("Role not found!");
         }
     }
 

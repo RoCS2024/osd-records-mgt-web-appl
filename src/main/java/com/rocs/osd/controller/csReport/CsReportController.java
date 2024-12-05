@@ -15,7 +15,7 @@ import java.util.Optional;
  *RestController for managing Community Service Report operation such as GET and POST request.
  */
 @RestController
-@RequestMapping("/csReport")
+@RequestMapping("/csreport")
 public class CsReportController {
     private CsReportService csReportService;
     private CsSlipService csSlipService;
