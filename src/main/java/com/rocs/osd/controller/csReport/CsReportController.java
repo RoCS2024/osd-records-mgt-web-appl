@@ -1,6 +1,7 @@
 package com.rocs.osd.controller.csReport;
 
 import com.rocs.osd.domain.csReport.CsReport;
+import com.rocs.osd.domain.violation.Violation;
 import com.rocs.osd.service.csReport.CsReportService;
 import com.rocs.osd.service.csSlip.CsSlipService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +62,11 @@ public class CsReportController {
             csReportService.addCsReport(csReport);
             return new ResponseEntity<>("CS Report successfully added", HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("CS Report cannot be added", HttpStatus.OK);
+            return new ResponseEntity<>("CS Report cannot be added", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
     /**
      * Add a new community service report to a specific community service slip.
      *
@@ -74,7 +77,7 @@ public class CsReportController {
     @PostMapping("/addCsReportForSlip/{csSlipId}")
     public ResponseEntity<CsReport> addCsReport(@PathVariable Long csSlipId, @RequestBody CsReport csReport) {
         CsReport createdReport = csSlipService.addCsReportToCsSlip(csSlipId, csReport);
-        return ResponseEntity.ok(createdReport);
+        return new ResponseEntity<>(createdReport, HttpStatus.OK);
     }
 
 }

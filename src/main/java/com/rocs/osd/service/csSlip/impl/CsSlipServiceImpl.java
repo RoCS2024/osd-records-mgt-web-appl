@@ -110,8 +110,7 @@ public class CsSlipServiceImpl implements CsSlipService {
         CsSlip csSlip = csSlipRepository.findById(csSlipId)
                 .orElseThrow(() -> new ResourceNotFoundException("CsSlip not found"));
         csSlip.addReport(csReport);
-        csReport = csReportRepository.save(csReport);
         csSlipRepository.save(csSlip);
-        return csReport;
+        return csReportRepository.save(csReport);
     }
 }
