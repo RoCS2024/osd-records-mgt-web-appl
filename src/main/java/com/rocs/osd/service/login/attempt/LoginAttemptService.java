@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
 /**
  * This manage login attempts and prevent brute force attacks.
  */
@@ -37,11 +38,11 @@ public class LoginAttemptService {
                 .expireAfterWrite(15, TimeUnit.MINUTES)
                 .maximumSize(100)
                 .build(new CacheLoader<>() {
-            @Override
-            public Integer load(String key)  {
-                return 0;
-            }
-        });
+                    @Override
+                    public Integer load(String key)  {
+                        return 0;
+                    }
+                });
     }
     /**
      * Removes a user from the login attempt cache, effectively resetting their login attempt count.
