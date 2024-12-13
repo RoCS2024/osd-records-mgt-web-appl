@@ -59,3 +59,24 @@ jobs:
         distribution: 'temurin'    
     - name: Generate and submit dependency graph      
       uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582
+
+  performance-test:
+   runs-on: ubuntu-latest
+
+   steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install JMeter
+      run: sudo apt-get install -y jmeter
+
+    - name: Run JMeter performance tests
+      run: |
+        mkdir -p jmeter-reports
+        jmeter -n -t jmeter-tests/testplan.jmx -l jmeter-reports/results.jtl -e -o jmeter-reports/
+
+    - name: Upload JMeter Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: jmeter-results
+        path: jmeter-reports
