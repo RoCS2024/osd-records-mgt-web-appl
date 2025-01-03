@@ -14,8 +14,7 @@ public class OsdRecordsMgtWebApplication {
 
 	/**
 	 * This creates and returns BCryptPasswordEncoder.
-	 *
-	 * @return a BCryptPasswordEncoder for password encryption
+	 *7	 * @return a BCryptPasswordEncoder for password encryption
 	 */
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder() {

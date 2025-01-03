@@ -78,6 +78,7 @@ public class UserController {
      * @throws UserNotFoundException if the user is not found
      * @throws UsernameNotFoundException if the username is not found
      */
+
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody Register register)
             throws UsernameNotFoundException, UsernameExistsException, EmailExistsException, MessagingException, PersonExistsException, UserNotFoundException {
@@ -253,6 +254,5 @@ public class UserController {
         headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(userPrincipal));
         return headers;
     }
-
 
 }

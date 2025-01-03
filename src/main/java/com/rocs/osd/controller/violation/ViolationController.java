@@ -106,12 +106,12 @@ public class ViolationController {
      * @return a success message if adding is successful, or an error message if the addition fails.
      */
     @PostMapping("/addViolation")
-    public ResponseEntity<String> addViolation(@RequestBody Violation violation) {
+    public ResponseEntity<Violation> addViolation(@RequestBody Violation violation) {
         try {
             violationService.addViolation(violation);
-            return new ResponseEntity<>("Violation successfully added", HttpStatus.CREATED);
+            return new ResponseEntity<>(violation, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>("Violation cannot be added", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
