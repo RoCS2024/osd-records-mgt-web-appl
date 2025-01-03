@@ -114,7 +114,6 @@ public class ViolationController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     /**
      * Updates an existing violation
      *
