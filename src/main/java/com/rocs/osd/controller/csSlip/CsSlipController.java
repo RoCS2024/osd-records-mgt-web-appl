@@ -68,12 +68,12 @@ public class CsSlipController {
     /**
      * Retrieves the total hours of community service by Student ID.
      *
-     * @param studentId ID of the student
+     * @param studentNumber ID of the student
      * @return  List of CsSlip Total hours
      */
-    @GetMapping("/totalCsHours/{studentId}")
-    public ResponseEntity<Integer> getTotalCsHoursByStudent(@PathVariable Long studentId) {
-        int totalCsHours = csSlipService.getTotalCsHoursByStudent(studentId);
+    @GetMapping("/totalCsHours/{studentNumber}")
+    public ResponseEntity<Integer> getTotalCsHoursByStudent(@PathVariable String studentNumber) {
+        int totalCsHours = csSlipService.getTotalCsHoursByStudent(studentNumber);
         return new ResponseEntity<>(totalCsHours, HttpStatus.OK);
     }
     /**

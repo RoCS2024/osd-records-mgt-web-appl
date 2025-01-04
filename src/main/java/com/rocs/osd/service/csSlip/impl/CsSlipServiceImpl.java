@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
 /**
  * Implementation of CsSlip interface that interacts with the CsSlipRepository
  * to retrieve and manage csSlip data from the database
@@ -42,7 +43,6 @@ public class CsSlipServiceImpl implements CsSlipService {
         this.csReportRepository = csReportRepository;
     }
 
-
     @Override
     public List<CsSlip> getAllCsSlip() {
         return csSlipRepository.findAll();
@@ -54,14 +54,13 @@ public class CsSlipServiceImpl implements CsSlipService {
     }
 
     @Override
-    public int getTotalCsHoursByStudent(Long studentId) {
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        if (studentOpt.isPresent()) {
-            List<Violation> violations = violationRepository.findByStudentId(studentId);
-            int totalCsHours = violations.stream().mapToInt(Violation::getCsHours).sum();
-            return totalCsHours;
+    public int getTotalCsHoursByStudent(String studentNumber) {
+        Student student = studentRepository.findByStudentNumber(studentNumber);
+        if (student != null) {
+            List<Violation> violations = violationRepository.findByStudentStudentNumber(studentNumber);
+            return violations.stream().mapToInt(Violation::getCsHours).sum();
         } else {
-            throw new IllegalArgumentException("Student not found with id: " + studentId);
+            throw new IllegalArgumentException("Student not found with number: " + studentNumber);
         }
     }
 

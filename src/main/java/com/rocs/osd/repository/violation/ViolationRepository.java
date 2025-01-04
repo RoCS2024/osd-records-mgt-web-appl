@@ -48,4 +48,14 @@ ViolationRepository extends JpaRepository<Violation, Long> {
      * @return list of violation with the specific firstName, middleName, and lastName.
      */
     List<Violation> findByStudentFirstNameContainingIgnoreCaseOrStudentMiddleNameContainingIgnoreCaseOrStudentLastNameContainingIgnoreCase(String firstName, String middleName, String lastName);
+
+    /**
+     * Finds a list of violations within a specified date range.
+     *
+     * @param offenseType offense type.
+     * @param studentId of the student.
+     * @return total of violations that occurred between the start and end dates.
+     */
+    @Query("SELECT COUNT(v) FROM Violation v WHERE v.student.id = :studentId AND v.offense.type = :offenseType")
+    int countByStudentIdAndOffenseType(@Param("studentId") Long studentId, @Param("offenseType") String offenseType);
 }
