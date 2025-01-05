@@ -38,5 +38,4 @@ public interface CsSlipRepository extends JpaRepository<CsSlip, Long> {
      * @return list of CsSlips
      */
     List<CsSlip> findByStudent_Id(Long id);
-
 }

@@ -65,10 +65,10 @@ public interface CsSlipService {
     /**
      * Calculates the total community service hours
      *
-     * @param studentId student ID
+     * @param studentNumber student ID
      * @return total number of community service hours for student
      */
-    int getTotalCsHoursByStudent(Long studentId);
+    int getTotalCsHoursByStudent(String studentNumber);
     /**
      * Updates the deduction amount for a Community Service Slip.
      *

@@ -1,6 +1,5 @@
 package com.rocs.osd.service.user.impl;
 
-
 import com.rocs.osd.domain.employee.Employee;
 import com.rocs.osd.domain.external.External;
 import com.rocs.osd.domain.guest.Guest;
@@ -119,6 +118,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         String password = register.getUser().getPassword();
         validateNewUsername(username);
         validatePassword(password);
+
         String otp = generateOTP();
         User user = new User();
         user.setUsername(username);
@@ -126,49 +126,63 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setJoinDate(new Date());
         user.setActive(true);
 
-        if (register.getEmployee() != null && register.getEmployee().getEmployeeNumber() != null) {
-            String userType = register.getEmployee().getEmployeeNumber();
-            Employee employeeExists = employeeRepository.findByEmployeeNumber(userType);
-            if (employeeExists != null) {
-                String email = employeeExists.getEmail();
+        if (register.getStudent() != null && register.getStudent().getEmail() != null && !register.getStudent().getEmail().isEmpty()) {
+            Student student = studentRepository.findByEmail(register.getStudent().getEmail());
+            if (student != null) {
+                String studentNumber = student.getStudentNumber();
+                String email = student.getEmail();
                 emailService.sendNewPasswordEmail(email, otp);
-                employeeExists.setUser(user);
-                user.setOtp(otp);
-                user.setLocked(true);
-                user.setRole(ROLE_EMPLOYEE.name());
-                user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
-                userRepository.save(user);
-            }
-        } else if (register.getStudent() != null && register.getStudent().getStudentNumber() != null) {
-            String userType = register.getStudent().getStudentNumber();
-            Student studentExists = studentRepository.findByStudentNumber(userType);
-            if (studentExists != null) {
-                String email = studentExists.getEmail();
-                emailService.sendNewPasswordEmail(email, otp);
-                studentExists.setUser(user);
+                student.setUser(user);
                 user.setOtp(otp);
                 user.setLocked(true);
                 user.setRole(ROLE_STUDENT.name());
                 user.setAuthorities(Arrays.stream(ROLE_STUDENT.getAuthorities()).toList());
                 userRepository.save(user);
+
+                register.getStudent().setStudentNumber(studentNumber);
+            } else {
+                throw new PersonExistsException("Invalid email.");
             }
-        } else if (register.getExternal() != null && register.getExternal().getExternalNumber() != null) {
-            String userType = register.getExternal().getExternalNumber();
-            External externalExists = externalRepository.findByExternalNumber(userType);
-            if (externalExists != null) {
-                String email = externalExists.getEmail();
+        }
+        else if (register.getEmployee() != null && register.getEmployee().getEmail() != null && !register.getEmployee().getEmail().isEmpty()) {
+            Employee employee = employeeRepository.findByEmail(register.getEmployee().getEmail());
+            if (employee != null) {
+                String employeeNumber = employee.getEmployeeNumber();
+                String email = employee.getEmail();
                 emailService.sendNewPasswordEmail(email, otp);
-                externalExists.setUser(user);
+                employee.setUser(user);
                 user.setOtp(otp);
                 user.setLocked(true);
                 user.setRole(ROLE_EMPLOYEE.name());
                 user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
                 userRepository.save(user);
+
+                register.getEmployee().setEmployeeNumber(employeeNumber);
+            } else {
+                throw new PersonExistsException("Invalid email.");
             }
-        } else if (register.getGuest() != null) {
+        }
+        else if (register.getExternal() != null && register.getExternal().getEmail() != null && !register.getExternal().getEmail().isEmpty()) {
+            External external = externalRepository.findByEmail(register.getExternal().getEmail());
+            if (external != null) {
+                String externalNumber = external.getExternalNumber();
+                String email = external.getEmail();
+                emailService.sendNewPasswordEmail(email, otp);
+                external.setUser(user);
+                user.setOtp(otp);
+                user.setLocked(true);
+                user.setRole(ROLE_EMPLOYEE.name());
+                user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
+                userRepository.save(user);
+
+                register.getExternal().setExternalNumber(externalNumber);
+            } else {
+                throw new PersonExistsException("Invalid email.");
+            }
+        }
+        else if (register.getGuest() != null) {
             String email = register.getGuest().getEmail();
             Guest guest = register.getGuest();
-
             guest.setUser(user);
             emailService.sendNewPasswordEmail(email, otp);
 
@@ -179,6 +193,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
             userRepository.save(user);
             guestRepository.save(guest);
+        } else {
+            throw new PersonExistsException("Invalid registration details. Please provide valid information.");
         }
         return register;
     }

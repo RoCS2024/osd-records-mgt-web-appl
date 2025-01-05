@@ -58,6 +58,13 @@ public class ViolationServiceImpl implements ViolationService {
     }
     @Override
     public void addViolation(Violation violation) {
+        String offenseType = violation.getOffense().getType();
+        Long studentId = violation.getStudent().getId();
+
+        int previousOccurrences = violationRepository.countByStudentIdAndOffenseType(studentId, offenseType);
+        int warningNumber = previousOccurrences + 1;
+        violation.setWarningNumber(warningNumber);
+
         violationRepository.save(violation);
     }
 
