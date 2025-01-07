@@ -56,6 +56,15 @@ ViolationRepository extends JpaRepository<Violation, Long> {
      * @param studentId of the student.
      * @return total of violations that occurred between the start and end dates.
      */
-    @Query("SELECT COUNT(v) FROM Violation v WHERE v.student.id = :studentId AND v.offense.type = :offenseType")
+    @Query("SELECT COUNT(v) FROM Violation v WHERE v.student.Id = :studentId AND v.offense.type = :offenseType")
     int countByStudentIdAndOffenseType(@Param("studentId") Long studentId, @Param("offenseType") String offenseType);
+    /**
+     * Finds CsSlips by the cluster name of the student's section.
+     *
+     * @param clusterName the name of the cluster
+     * @return list of CsSlips associated with the given cluster name
+     */
+
+    @Query("SELECT cs FROM Violation cs " + "JOIN cs.student st " + "JOIN st.section sec " + "WHERE sec.clusterName = :clusterName")
+    List<Violation> findByClusterName(@Param("clusterName") String clusterName);
 }
