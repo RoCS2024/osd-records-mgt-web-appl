@@ -72,4 +72,11 @@ public interface ViolationService {
      * @param violation  violation updated information.
      */
     void updateViolation(Violation violation);
+    /**
+     * Retrieves violations filtered by the given clusterName.
+     *
+     * @param clusterName the cluster to filter by (CETE or CEBAM)
+     * @return list of violations related to the specified clusterName
+     */
+    List<Violation> getViolationByClusterName(String clusterName);
 }

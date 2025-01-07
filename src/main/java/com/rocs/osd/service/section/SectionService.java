@@ -14,4 +14,11 @@ public interface SectionService {
      * @return list of all section
      */
     List<Section> getAllSection();
+    /**
+     * Retrieves section by cluster.
+     *
+     * @param clusterName of the section
+     * @return a list of cluster
+     */
+    List<Section> getSectionByClusterName(String clusterName);
 }

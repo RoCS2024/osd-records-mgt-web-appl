@@ -76,4 +76,8 @@ public class ViolationServiceImpl implements ViolationService {
             throw new IllegalArgumentException("Violation with ID " + violation.getId() + " not found.");
         }
     }
+    @Override
+    public List<Violation> getViolationByClusterName(String clusterName) {
+        return violationRepository.findByClusterName(clusterName);
+    }
 }

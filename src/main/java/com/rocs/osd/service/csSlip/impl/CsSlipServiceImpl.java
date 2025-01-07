@@ -112,4 +112,9 @@ public class CsSlipServiceImpl implements CsSlipService {
         csSlipRepository.save(csSlip);
         return csReportRepository.save(csReport);
     }
+
+    @Override
+    public List<CsSlip> getCsSlipByClusterName(String clusterName) {
+        return csSlipRepository.findByClusterName(clusterName);
+    }
 }

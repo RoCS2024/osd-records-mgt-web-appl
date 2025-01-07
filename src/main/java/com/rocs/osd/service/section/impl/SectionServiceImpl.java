@@ -26,4 +26,9 @@ public class SectionServiceImpl implements SectionService {
     public List<Section> getAllSection() {
         return sectionRepository.findAll();
     }
+
+    @Override
+    public List<Section> getSectionByClusterName(String clusterName) {
+        return sectionRepository.getSectionByClusterName(clusterName);
+    }
 }

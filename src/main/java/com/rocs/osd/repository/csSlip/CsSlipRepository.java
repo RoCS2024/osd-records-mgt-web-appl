@@ -2,6 +2,8 @@ package com.rocs.osd.repository.csSlip;
 
 import com.rocs.osd.domain.csSlip.CsSlip;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 /**
@@ -38,5 +40,12 @@ public interface CsSlipRepository extends JpaRepository<CsSlip, Long> {
      * @return list of CsSlips
      */
     List<CsSlip> findByStudent_Id(Long id);
-
+    /**
+     * Finds CsSlips by the cluster name of the student's section.
+     *
+     * @param clusterName the name of the cluster
+     * @return list of CsSlips associated with the given cluster name
+     */
+    @Query("SELECT cs FROM CsSlip cs " + "JOIN cs.student st " + "JOIN st.section sec " + "WHERE sec.clusterName = :clusterName")
+        List<CsSlip> findByClusterName(@Param("clusterName") String clusterName);
 }
