@@ -5,6 +5,7 @@ import com.rocs.osd.service.section.SectionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,5 +34,16 @@ public class SectionController {
     @GetMapping("/sectionList")
     public ResponseEntity<List<Section>> getAllSection() {
         return new ResponseEntity<>(sectionService.getAllSection(), HttpStatus.OK);
+    }
+    /**
+     * Retrieves the list of clusterName.
+     *
+     * @param clusterName organization to retrieve
+     * @return list of clusterName
+     */
+    @GetMapping("/clusterName/{clusterName}")
+    public ResponseEntity<List<Section>> getSectionByClusterName(@PathVariable String clusterName) {
+        List<Section> sections = sectionService.getSectionByClusterName(clusterName);
+        return new ResponseEntity<>(sections, HttpStatus.OK);
     }
 }

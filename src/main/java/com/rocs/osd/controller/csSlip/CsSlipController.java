@@ -150,4 +150,19 @@ public class CsSlipController {
             return new ResponseEntity<>("Community Service Slip cannot be added", HttpStatus.OK);
         }
     }
+    /**
+     * Retrieve community service slips by the cluster name of the student's section.
+     *
+     * @param clusterName the name of the cluster
+     * @return a ResponseEntity containing a list of CsSlips and an HTTP status
+     */
+    @GetMapping("/clusterName/{clusterName}")
+    public ResponseEntity<List<CsSlip>> getCsSlipByClusterName(@PathVariable String clusterName) {
+        try {
+            List<CsSlip> csSlips = csSlipService.getCsSlipByClusterName(clusterName);
+            return new ResponseEntity<>(csSlips, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

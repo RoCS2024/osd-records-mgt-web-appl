@@ -1,5 +1,6 @@
 package com.rocs.osd.controller.violation;
 
+import com.rocs.osd.domain.violationList.ViolationList;
 import com.rocs.osd.domain.violation.Violation;
 import com.rocs.osd.service.violation.ViolationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,5 +130,27 @@ public class ViolationController {
             return new ResponseEntity<>("Violation not found", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    @GetMapping("/listOfViolation/{studentNumber}")
+    public ResponseEntity<ViolationList> getAllViolationsByStudentNumber(@PathVariable String studentNumber) {
+        List<Violation> violations = this.violationService.getAllViolationByStudentNumber(studentNumber);
+        ViolationList sample = new ViolationList();
+        sample.setStudentId(violations.get(0).getStudent().getId());
+        sample.setOffense(violations.get(0).getOffense());
+        return new ResponseEntity<>(sample, HttpStatus.OK);
+    }
+    /**
+     * Retrieve community service slips by the cluster name of the student's section.
+     *
+     * @param clusterName the name of the cluster
+     * @return a ResponseEntity containing a list of CsSlips and an HTTP status
+     */
+    @GetMapping("/clusterName/{clusterName}")
+    public ResponseEntity<List<Violation>> getViolationByClusterName(@PathVariable String clusterName) {
+        try {
+            List<Violation> violations = violationService.getViolationByClusterName(clusterName);
+            return new ResponseEntity<>(violations, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

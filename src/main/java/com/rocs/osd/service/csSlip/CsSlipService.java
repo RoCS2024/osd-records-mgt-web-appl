@@ -84,5 +84,12 @@ public interface CsSlipService {
      * @return the updated CsSlip with the added report
      */
     CsReport addCsReportToCsSlip(Long csSlipId, CsReport csReport);
+    /**
+     * Retrieves violations filtered by the given clusterName.
+     *
+     * @param clusterName the cluster to filter by (CETE or CEBAM)
+     * @return list of violations related to the specified clusterName
+     */
+    List<CsSlip> getCsSlipByClusterName(String clusterName);
 
 }
