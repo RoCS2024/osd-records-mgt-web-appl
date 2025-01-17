@@ -126,61 +126,61 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setJoinDate(new Date());
         user.setActive(true);
 
-        if (register.getStudent() != null && register.getStudent().getEmail() != null && !register.getStudent().getEmail().isEmpty()) {
-            Student student = studentRepository.findByEmail(register.getStudent().getEmail());
-            if (student != null) {
-                String studentNumber = student.getStudentNumber();
-                String email = student.getEmail();
+        if (register.getStudent() != null) {
+            String email = register.getStudent().getEmail();
+            String studentNumber = register.getStudent().getStudentNumber();
+
+            boolean exists = studentRepository.existsByStudentNumberAndEmail(studentNumber, email);
+            if (exists) {
                 emailService.sendNewPasswordEmail(email, otp);
+
+                Student student = studentRepository.findByStudentNumber(studentNumber);
                 student.setUser(user);
                 user.setOtp(otp);
                 user.setLocked(true);
                 user.setRole(ROLE_STUDENT.name());
                 user.setAuthorities(Arrays.stream(ROLE_STUDENT.getAuthorities()).toList());
                 userRepository.save(user);
-
-                register.getStudent().setStudentNumber(studentNumber);
             } else {
-                throw new PersonExistsException("Invalid email.");
+                throw new PersonExistsException("Invalid email or student number.");
             }
-        }
-        else if (register.getEmployee() != null && register.getEmployee().getEmail() != null && !register.getEmployee().getEmail().isEmpty()) {
-            Employee employee = employeeRepository.findByEmail(register.getEmployee().getEmail());
-            if (employee != null) {
-                String employeeNumber = employee.getEmployeeNumber();
-                String email = employee.getEmail();
+        } else if (register.getEmployee() != null) {
+            String email = register.getEmployee().getEmail();
+            String employeeNumber = register.getEmployee().getEmployeeNumber();
+
+            boolean exists = employeeRepository.existsByEmployeeNumberAndEmail(employeeNumber, email);
+            if (exists) {
                 emailService.sendNewPasswordEmail(email, otp);
+
+                Employee employee = employeeRepository.findByEmployeeNumber(employeeNumber);
                 employee.setUser(user);
                 user.setOtp(otp);
                 user.setLocked(true);
                 user.setRole(ROLE_EMPLOYEE.name());
                 user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
                 userRepository.save(user);
-
-                register.getEmployee().setEmployeeNumber(employeeNumber);
             } else {
-                throw new PersonExistsException("Invalid email.");
+                throw new PersonExistsException("Invalid email or employee number.");
             }
-        }
-        else if (register.getExternal() != null && register.getExternal().getEmail() != null && !register.getExternal().getEmail().isEmpty()) {
-            External external = externalRepository.findByEmail(register.getExternal().getEmail());
-            if (external != null) {
-                String externalNumber = external.getExternalNumber();
-                String email = external.getEmail();
+        } else if (register.getExternal() != null) {
+            String email = register.getExternal().getEmail();
+            String externalNumber = register.getExternal().getExternalNumber();
+
+            boolean exists = externalRepository.existsByExternalNumberAndEmail(externalNumber, email);
+            if (exists) {
                 emailService.sendNewPasswordEmail(email, otp);
+
+                External external = externalRepository.findByExternalNumber(externalNumber);
                 external.setUser(user);
                 user.setOtp(otp);
                 user.setLocked(true);
                 user.setRole(ROLE_EMPLOYEE.name());
                 user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
                 userRepository.save(user);
-
-                register.getExternal().setExternalNumber(externalNumber);
             } else {
-                throw new PersonExistsException("Invalid email.");
+                throw new PersonExistsException("Invalid email or external number.");
             }
-        }
-        else if (register.getGuest() != null) {
+        } else if (register.getGuest() != null) {
             String email = register.getGuest().getEmail();
             Guest guest = register.getGuest();
             guest.setUser(user);
