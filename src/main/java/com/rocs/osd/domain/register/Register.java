@@ -12,6 +12,7 @@ import lombok.Data;
 @Data
 public class Register {
     private User user;
+    private String email;
     private Employee employee;
     private External external;
     private Guest guest;

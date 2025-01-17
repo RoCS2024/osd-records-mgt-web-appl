@@ -62,11 +62,10 @@ public interface UserService {
     /**
      * Verifies an OTP to unlock a user account.
      *
-     * @param username the username of the user
      * @param otp the OTP code for verification
      * @return OTP is valid
      */
-    boolean verifyOtp(String username, String otp);
+    boolean verifyOtp(String otp) throws MessagingException;
     /**
      * Initiates a username retrieval process by sending an OTP to the user's registered email.
      *

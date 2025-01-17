@@ -10,7 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  * Serves as the entry point to start the Spring Boot application
  */
 @SpringBootApplication
-public class OsdRecordsMgtWebApplication {
+public class 	OsdRecordsMgtWebApplication {
 
 	/**
 	 * This creates and returns BCryptPasswordEncoder.
