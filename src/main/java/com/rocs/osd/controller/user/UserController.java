@@ -130,14 +130,10 @@ public class UserController {
      * @return success or failure message based on OTP validation
      */
     @PostMapping("/verify-otp")
-    public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> request) {
-        String username = request.get("username");
+    public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> request) throws MessagingException {
         String otp = request.get("otp");
 
-        if (username == null || otp == null) {
-            return new ResponseEntity<>("Both username and otp are required", HttpStatus.BAD_REQUEST);
-        }
-        boolean isVerified = userService.verifyOtp(username, otp);
+        boolean isVerified = userService.verifyOtp(otp);
         if (isVerified) {
             return new ResponseEntity<>("Account unlocked successfully", HttpStatus.OK);
         } else {
@@ -162,13 +158,18 @@ public class UserController {
         long userId = loginUser.getId();
         String role = loginUser.getRole();
         String userNumber = getUserNumber(userId, role);
+        String response;
         if (userNumber == null) {
             throw new UsernameNotFoundException("User account not found");
         }
-
+        if(loginUser.getOtp() != null){
+            response = "1";
+        } else {
+            response = userNumber;
+        }
         UserPrincipal userPrincipal = new UserPrincipal(loginUser);
         HttpHeaders jwtHeaders = getJwtHeader(userPrincipal);
-        return new ResponseEntity<>(userNumber, jwtHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(response, jwtHeaders, HttpStatus.OK);
     }
 
     /**

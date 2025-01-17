@@ -3,6 +3,7 @@ package com.rocs.osd.service.user.impl;
 import com.rocs.osd.domain.employee.Employee;
 import com.rocs.osd.domain.external.External;
 import com.rocs.osd.domain.guest.Guest;
+import com.rocs.osd.domain.otpVerfication.OtpVerification;
 import com.rocs.osd.domain.register.Register;
 import com.rocs.osd.domain.student.Student;
 import com.rocs.osd.domain.user.User;
@@ -18,7 +19,9 @@ import com.rocs.osd.repository.student.StudentRepository;
 import com.rocs.osd.repository.user.UserRepository;
 import com.rocs.osd.service.email.EmailService;
 import com.rocs.osd.service.login.attempt.LoginAttemptService;
+import com.rocs.osd.service.register.otpVerification.OtpVerificationService;
 import com.rocs.osd.service.user.UserService;
+import com.rocs.osd.utils.security.enumeration.Role;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -33,9 +36,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.rocs.osd.utils.security.enumeration.Role.*;
 
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private GuestRepository guestRepository;
     private BCryptPasswordEncoder passwordEncoder;
     private LoginAttemptService loginAttemptService;
+    private OtpVerificationService otpVerificationService;
     private EmailService emailService;
 
     /**
@@ -77,6 +79,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                            GuestRepository guestRepository,
                            BCryptPasswordEncoder passwordEncoder,
                            LoginAttemptService loginAttemptService,
+                           OtpVerificationService otpVerificationService,
                            EmailService emailService) {
         this.employeeRepository = employeeRepository;
         this.studentRepository = studentRepository;
@@ -85,8 +88,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.guestRepository = guestRepository;
         this.passwordEncoder = passwordEncoder;
         this.loginAttemptService = loginAttemptService;
+        this.otpVerificationService = otpVerificationService;
         this.emailService = emailService;
     }
+
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = this.userRepository.findUserByUsername(username);
@@ -112,92 +118,68 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             loginAttemptService.evictUserFromLoginAttemptCache(user.getUsername());
         }
     }
+
     @Override
     public Register register(Register register) throws UsernameNotFoundException, UsernameExistsException, MessagingException, PersonExistsException, UserNotFoundException {
         String username = register.getUser().getUsername();
         String password = register.getUser().getPassword();
+        String email = register.getEmail();
+
         validateNewUsername(username);
         validatePassword(password);
 
-        String otp = generateOTP();
         User user = new User();
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
         user.setJoinDate(new Date());
         user.setActive(true);
-
-        if (register.getStudent() != null) {
-            String email = register.getStudent().getEmail();
-            String studentNumber = register.getStudent().getStudentNumber();
-
-            boolean exists = studentRepository.existsByStudentNumberAndEmail(studentNumber, email);
-            if (exists) {
-                emailService.sendNewPasswordEmail(email, otp);
-
-                Student student = studentRepository.findByStudentNumber(studentNumber);
-                student.setUser(user);
-                user.setOtp(otp);
-                user.setLocked(true);
-                user.setRole(ROLE_STUDENT.name());
-                user.setAuthorities(Arrays.stream(ROLE_STUDENT.getAuthorities()).toList());
-                userRepository.save(user);
-            } else {
-                throw new PersonExistsException("Invalid email or student number.");
-            }
-        } else if (register.getEmployee() != null) {
-            String email = register.getEmployee().getEmail();
-            String employeeNumber = register.getEmployee().getEmployeeNumber();
-
-            boolean exists = employeeRepository.existsByEmployeeNumberAndEmail(employeeNumber, email);
-            if (exists) {
-                emailService.sendNewPasswordEmail(email, otp);
-
-                Employee employee = employeeRepository.findByEmployeeNumber(employeeNumber);
-                employee.setUser(user);
-                user.setOtp(otp);
-                user.setLocked(true);
-                user.setRole(ROLE_EMPLOYEE.name());
-                user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
-                userRepository.save(user);
-            } else {
-                throw new PersonExistsException("Invalid email or employee number.");
-            }
-        } else if (register.getExternal() != null) {
-            String email = register.getExternal().getEmail();
-            String externalNumber = register.getExternal().getExternalNumber();
-
-            boolean exists = externalRepository.existsByExternalNumberAndEmail(externalNumber, email);
-            if (exists) {
-                emailService.sendNewPasswordEmail(email, otp);
-
-                External external = externalRepository.findByExternalNumber(externalNumber);
-                external.setUser(user);
-                user.setOtp(otp);
-                user.setLocked(true);
-                user.setRole(ROLE_EMPLOYEE.name());
-                user.setAuthorities(Arrays.stream(ROLE_EMPLOYEE.getAuthorities()).toList());
-                userRepository.save(user);
-            } else {
-                throw new PersonExistsException("Invalid email or external number.");
-            }
-        } else if (register.getGuest() != null) {
-            String email = register.getGuest().getEmail();
-            Guest guest = register.getGuest();
-            guest.setUser(user);
-            emailService.sendNewPasswordEmail(email, otp);
-
-            user.setOtp(otp);
-            user.setLocked(false);
-            user.setRole(ROLE_GUEST.name());
-            user.setAuthorities(Arrays.stream(ROLE_GUEST.getAuthorities()).toList());
-
-            userRepository.save(user);
-            guestRepository.save(guest);
-        } else {
-            throw new PersonExistsException("Invalid registration details. Please provide valid information.");
+        if (!assignUserRole(email, user)) {
+            throw new UserNotFoundException("No associated user found for email: " + email);
         }
         return register;
     }
+
+    private boolean assignUserRole(String email, User user) throws UserNotFoundException, MessagingException {
+        Map<Object, Role> userMappings = new HashMap<>();
+        userMappings.put(studentRepository.findByEmail(email), ROLE_STUDENT);
+        userMappings.put(employeeRepository.findByEmail(email), ROLE_EMPLOYEE);
+        userMappings.put(externalRepository.findByEmail(email), ROLE_EMPLOYEE);
+        userMappings.put(guestRepository.findByEmail(email), ROLE_GUEST);
+
+        for (Map.Entry<Object, Role> entry : userMappings.entrySet()) {
+            Object entity = entry.getKey();
+            if (entity != null) {
+                if (entity instanceof Student && ((Student) entity).getUser() != null ||
+                        entity instanceof Employee && ((Employee) entity).getUser() != null ||
+                        entity instanceof External && ((External) entity).getUser() != null ||
+                        entity instanceof Guest && ((Guest) entity).getUser() != null) {
+                    throw new UserNotFoundException("Email address has already been registered!");
+                }
+                if (entity instanceof Student) {
+                    studentRepository.save((Student) entity).setUser(user);
+                } else if (entity instanceof Employee) {
+                    employeeRepository.save((Employee) entity).setUser(user);
+                } else if (entity instanceof External) {
+                    externalRepository.save((External) entity).setUser(user);
+                } else if (entity instanceof Guest) {
+                    guestRepository.save((Guest) entity).setUser(user);
+                }
+                Role role = entry.getValue();
+                user.setRole(role.name());
+                user.setLocked(false);
+                user.setAuthorities(Arrays.asList(role.getAuthorities()));
+                user.setOtp("1");
+                OtpVerification otpVerification = new OtpVerification();
+                otpVerification.email = email;
+                otpVerification.username = user.getUsername();
+                otpVerificationService.addUserToOtpCache(otpVerification);
+                userRepository.save(user);
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public User forgotPassword(User newUser) throws UsernameNotFoundException, MessagingException {
         String username = newUser.getUsername();
@@ -245,16 +227,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return newUser;
     }
     @Override
-    public boolean verifyOtp(String username, String otp) {
-        User user = userRepository.findUserByUsername(username);
-        if (user != null && user.getOtp().equals(otp)) {
-            user.setLocked(false);
-            user.setOtp(null);
-            userRepository.save(user);
-            return true;
-        } else {
-            return false;
+    public boolean verifyOtp(String otp) throws MessagingException {
+        OtpVerification otpVer = otpVerificationService.getOtpDetails(otp);
+        if(otpVer != null){
+            otpVerificationService.addUserToOtpCache(otpVer);
+
+            String username = otpVer.username;
+            User user = userRepository.findUserByUsername(username);
+            if(otpVerificationService.verifyOtp(otp, user)){
+                return true;
+            }
         }
+        return false;
     }
 
     private void validateNewUsername(String newUsername)
