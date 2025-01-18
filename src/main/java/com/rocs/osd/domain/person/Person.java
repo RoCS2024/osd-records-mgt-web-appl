@@ -22,20 +22,20 @@ public class Person {
     @Column(length = 32)
     private String middleName;
     private Date birthdate;
-    @Column(length = 128, nullable = false)
+    @Column(length = 128, nullable = true)
     private String birthplace;
-    @Column(length = 8, nullable = false)
+    @Column(length = 8, nullable = true)
     private String sex;
-    @Column(length = 16, nullable = false)
+    @Column(length = 16, nullable = true)
     private String civilStatus;
-    @Column(length = 32, nullable = false)
+    @Column(length = 32, nullable = true)
     private String citizenship;
-    @Column(length = 32, nullable = false)
+    @Column(length = 32, nullable = true)
     private String religion;
-    @Column(length = 64, nullable = false)
+    @Column(length = 64, nullable = true)
     private String email;
-    @Column(length = 128, nullable = false)
+    @Column(length = 128, nullable = true)
     private String address;
-    @Column(length = 11)
+    @Column(length = 11, nullable = true)
     private String contactNumber;
 }

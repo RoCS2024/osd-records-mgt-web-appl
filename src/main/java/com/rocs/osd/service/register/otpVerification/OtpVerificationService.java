@@ -33,34 +33,35 @@ public class OtpVerificationService {
     }
 
     public void addUserToOtpCache(OtpVerification otpVerification) throws MessagingException {
-        regenerateOtp(otpVerification);  // Generate and send OTP initially
+        regenerateOtp(otpVerification);
     }
 
     public OtpVerification getOtpDetails(String otp) {
-        return otpVerificationCache.getIfPresent(otp);  // Fetch OTP details if available in cache
+        return otpVerificationCache.getIfPresent(otp);
     }
 
     public void evictUserFromLoginAttemptCache(String username) {
-        otpVerificationCache.invalidate(username);  // Invalidate cache for specific user
+        otpVerificationCache.invalidate(username);
     }
 
     public boolean verifyOtp(String otp, User user) throws MessagingException {
-        OtpVerification otpVerification = otpVerificationCache.getIfPresent(otp);  // Get OTP details from cache
+        OtpVerification otpVerification = otpVerificationCache.getIfPresent(otp);
         LOGGER.info("Verifying OTP [{}] for user [{}]", otp, user.getUsername());
         if (otpVerification != null) {
             if (otpVerification.isExpired()) {
                 LOGGER.info("OTP [{}] for user [{}] is expired. Regenerating a new one.", otp, user.getUsername());
+                regenerateOtp(otpVerification);
                 return false;
             }
             user.setLocked(false);
             user.setOtp(null);
             userRepository.save(user);
-            otpVerificationCache.invalidate(otp);  // Invalidate the old OTP after verification
+            otpVerificationCache.invalidate(otp);
             LOGGER.info("OTP verified for user: {}", user.getUsername());
             return true;
         }
 
-        LOGGER.error("OTP [{}] not found for user [{}].", otp, user.getUsername());  // OTP not found in cache
+        LOGGER.error("OTP [{}] not found for user [{}].", otp, user.getUsername());
         return false;
     }
 
@@ -71,7 +72,6 @@ public class OtpVerificationService {
     private void regenerateOtp(OtpVerification otpVerification) throws MessagingException {
         String newOtp = generateOTP();
         otpVerification.otp = newOtp;
-        otpVerification.setExpired(false);
 
         emailService.sendNewPasswordEmail(otpVerification.email, newOtp);
 
