@@ -144,41 +144,60 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userMappings.put(studentRepository.findByEmail(email), ROLE_STUDENT);
         userMappings.put(employeeRepository.findByEmail(email), ROLE_EMPLOYEE);
         userMappings.put(externalRepository.findByEmail(email), ROLE_EMPLOYEE);
-        userMappings.put(guestRepository.findByEmail(email), ROLE_GUEST);
+
+        boolean userAssigned = false;
 
         for (Map.Entry<Object, Role> entry : userMappings.entrySet()) {
             Object entity = entry.getKey();
             if (entity != null) {
-                if (entity instanceof Student && ((Student) entity).getUser() != null ||
-                        entity instanceof Employee && ((Employee) entity).getUser() != null ||
-                        entity instanceof External && ((External) entity).getUser() != null ||
-                        entity instanceof Guest && ((Guest) entity).getUser() != null) {
+                if ((entity instanceof Student && ((Student) entity).getUser() != null) ||
+                        (entity instanceof Employee && ((Employee) entity).getUser() != null) ||
+                        (entity instanceof External && ((External) entity).getUser() != null)) {
+
                     throw new UserNotFoundException("Email address has already been registered!");
                 }
-                if (entity instanceof Student) {
-                    studentRepository.save((Student) entity).setUser(user);
-                } else if (entity instanceof Employee) {
-                    employeeRepository.save((Employee) entity).setUser(user);
-                } else if (entity instanceof External) {
-                    externalRepository.save((External) entity).setUser(user);
-                } else if (entity instanceof Guest) {
-                    guestRepository.save((Guest) entity).setUser(user);
+
+                if (entity instanceof Student student) {
+                    student.setUser(user);
+                    studentRepository.save(student);
+                } else if (entity instanceof Employee employee) {
+                    employee.setUser(user);
+                    employeeRepository.save(employee);
+                } else if (entity instanceof External external) {
+                    external.setUser(user);
+                    externalRepository.save(external);
                 }
-                Role role = entry.getValue();
-                user.setRole(role.name());
-                user.setLocked(false);
-                user.setAuthorities(Arrays.asList(role.getAuthorities()));
-                user.setOtp("1");
-                OtpVerification otpVerification = new OtpVerification();
-                otpVerification.email = email;
-                otpVerification.username = user.getUsername();
-                otpVerificationService.addUserToOtpCache(otpVerification);
-                userRepository.save(user);
-                return true;
+
+                assignUserDetails(user, entry.getValue(), email);
+                return true; // User assigned, exit function
             }
         }
-        return false;
+
+        // If no user was found in Student, Employee, or External, create a Guest
+        Guest newGuest = new Guest();
+        newGuest.setUser(user);
+        newGuest.setEmail(email);
+        guestRepository.save(newGuest);
+
+        assignUserDetails(user, ROLE_GUEST, email);
+        return true;
     }
+
+    private void assignUserDetails(User user, Role role, String email) throws MessagingException {
+        user.setRole(role.name());
+        user.setLocked(false);
+        user.setAuthorities(Arrays.asList(role.getAuthorities()));
+        user.setOtp("1");
+
+        OtpVerification otpVerification = new OtpVerification();
+        otpVerification.email = email;
+        otpVerification.username = user.getUsername();
+        otpVerificationService.addUserToOtpCache(otpVerification);
+
+        userRepository.save(user);
+    }
+
+
 
     @Override
     public User forgotPassword(User newUser) throws UsernameNotFoundException, MessagingException {
@@ -231,12 +250,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         OtpVerification otpVer = otpVerificationService.getOtpDetails(otp);
         if(otpVer != null){
             otpVerificationService.addUserToOtpCache(otpVer);
-
             String username = otpVer.username;
             User user = userRepository.findUserByUsername(username);
-            if(otpVerificationService.verifyOtp(otp, user)){
-                return true;
-            }
+            return otpVerificationService.verifyOtp(otp, user);
         }
         return false;
     }
